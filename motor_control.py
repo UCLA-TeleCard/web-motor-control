@@ -1,3 +1,6 @@
+# import all the required libraries:
+# flask for web server hosting
+# GPIO communicates with motors / servos
 from flask import Flask
 from flask import request
 
@@ -6,8 +9,12 @@ import atexit
 # import RPi.GPIO as GPIO
 from time import sleep
 
+
+# initialize the web server
 app = Flask(__name__)
 
+# initialize the GPIO pins, using the following Pin#'s:
+# http://www.rpi-spy.co.uk/wp-content/uploads/2012/06/Raspberry-Pi-GPIO-Layout-Model-B-Plus-rotated-2700x900.png 
 # GPIO.setmode(GPIO.BOARD)
 # GPIO.setup(11, GPIO.OUT)
 
@@ -28,6 +35,8 @@ app = Flask(__name__)
 
 # atexit.register(turnOffMotors)
 
+
+# defines the home page 
 @app.route("/")
 def web_interface():
   html = open("web_interface.html")
@@ -37,6 +46,8 @@ def web_interface():
   sleep(1)
   return response
 
+
+# different "pages" for each individual function
 @app.route("/set_speed")
 def set_speed():
   speed = int(request.args.get("speed"))
@@ -46,6 +57,8 @@ def set_speed():
   sleep(1)
 
   return ("Received " + str(speed))
+
+
 
 @app.route("/set_toggle")
 def set_toggle():
@@ -70,7 +83,7 @@ def set_button():
 
 
 
-
+# allows connections from the local network
 def main():
   app.run(host= '0.0.0.0')
 
