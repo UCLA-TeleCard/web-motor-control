@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+
+USB_PORT = "/dev/ttyACM0"  # Arduino Uno R3 Compatible
+
 # import all the required libraries:
 # flask for web server hosting
 # GPIO communicates with motors / servos
@@ -6,8 +10,22 @@ from flask import request
 
 import time
 import atexit
-# import RPi.GPIO as GPIO
+import serial
+import RPi.GPIO as GPIO
 from time import sleep
+
+
+# Connect to USB serial port
+try:
+  
+  usb = serial.Serial(USB_PORT, 115200, timeout=2)
+  usb.baudrate = 115200
+  print("Arduino connected")
+   
+except:
+   print("ERROR - Could not open USB serial port.  Please check your port name and permissions.")
+   print("Exiting program.")
+   exit()
 
 
 # initialize the web server
@@ -73,13 +91,24 @@ def set_toggle():
 
 @app.route("/set_button")
 def set_button():
-  butt = request.args.get("butt")
+  butt = request.args.get("state")
   print ("Received " + str(butt))
 
   # pwm.ChangeDutyCycle(state)
   sleep(1)
 
   return ("Received " + str(butt))
+
+
+@app.route("/turn_wheel")
+def turn_wheel():
+  butt = request.args.get("state")
+  print ("Received " + str(butt))
+  usb.write(str(butt).encode(encoding="utf-8"))
+  # sleep(1)
+  
+  return ("Received " + str(butt))
+
 
 
 
