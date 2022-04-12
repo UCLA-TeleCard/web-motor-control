@@ -47,6 +47,7 @@ def turnOffMotors(motor):
   motor.stop()
   GPIO.cleanup()
 
+# input = angle in degrees, between 0 and 180
 def setAngle(motor, angle):
   motor.ChangeDutyCycle(2+(angle/18))
   time.sleep(0.5)
@@ -60,50 +61,31 @@ atexit.register(turnOffMotors(servo1))
 # initialize the web server
 app = Flask(__name__)
 
+
+
 # defines the home page 
 @app.route("/")
 def web_interface():
   html = open("web_interface.html")
   response = html.read().replace('\n', '')
   html.close()
-  #pwm.ChangeDutyCycle(7.5) # neutral position
-  sleep(1)
+
+  setAngle(servo1, 90)
+
   return response
 
 
+
 # different "pages" for each individual function
-@app.route("/set_speed")
-def set_speed():
-  speed = int(request.args.get("speed"))
-  print ("Received " + str(speed))
+@app.route("/set_servo")
+def set_angle():
+  angle = int(request.args.get("angle"))
+  print ("Received " + str(angle))
 
-  #pwm.ChangeDutyCycle(speed)
-  sleep(1)
+  setAngle(servo1, angle)
 
-  return ("Received " + str(speed))
+  return ("Received " + str(angle))
 
-
-
-@app.route("/set_toggle")
-def set_toggle():
-  state = request.args.get("state")
-  print ("Received " + str(state))
-
-  # pwm.ChangeDutyCycle(state)
-  sleep(1)
-
-  return ("Received " + str(state))
-
-
-@app.route("/set_button")
-def set_button():
-  butt = request.args.get("state")
-  print ("Received " + str(butt))
-
-  # pwm.ChangeDutyCycle(state)
-  sleep(1)
-
-  return ("Received " + str(butt))
 
 
 @app.route("/turn_wheel")
@@ -111,8 +93,6 @@ def turn_wheel():
   butt = request.args.get("state")
   print ("Received " + str(butt))
   usb.write(str(butt).encode(encoding="utf-8"))
-  # sleep(1)
-  
   return ("Received " + str(butt))
 
 
@@ -121,4 +101,9 @@ def turn_wheel():
 def main():
   app.run(host= '0.0.0.0')
 
-main()
+try:
+  main()
+
+finally:
+  GPIO.cleanup()
+  print("Goodbye!")

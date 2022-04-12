@@ -3,102 +3,49 @@
 <body>
 
 <h1>Servo Control</h1>
-<!-- <p>Drag the slider to display the current value.</p> -->
 
-<!-- SLIDER TEMPLATE -->
+<!-- Servo 0 to 180 degrees -->
 <div id="slidecontainer">
-  <input type="range" min="5" max="10" value="7.5" id="range1">
+  <input type="range" min="0" max="180" value="90" id="range1">
   <p>Value: <span id="range1_value"></span></p>
 </div>
 
 <script>
 var slider = document.getElementById("range1");
-var output = document.getElementById("range1_value");
+var output = document.getElementById("range1");
 output.innerHTML = slider.value;
 
 slider.oninput = function() {
   output.innerHTML = slider.value;
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-    }
-  };
-  xhttp.open("GET", "http://192.168.1.21:5000/set_speed?speed=" + slider.value, true);
+    if (this.readyState == 4 && this.status == 200) {}
+};
+  xhttp.open("GET", "http://192.168.1.21:5000/set_servo?angle=" + slider.value, true);
   xhttp.send();
 }
 </script>
 
-
-
-<!-- checkbox [WIP] -->
-<div id="pushbutton">
-  <input type="checkbox" id="slider2">
-  <p>Value: <span class="switch" id="slider2_value"></span></p>
-</div>
-
-<script>
-var slider2 = document.getElementById("slider2");
-var output2 = document.getElementById("slider2_value");
-output2.innerHTML = slider2.value;
-
-slider2.oninput = function() {
-  output2.innerHTML = slider2.value;
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-    }
-  };
-  xhttp.open("GET", "http://192.168.1.21:5000/set_toggle?state=" + slider2.value, true);
-  xhttp.send();
-}
-</script>
-
-
-
-<!-- BUTTON TEMPLATE -->
-<div id="buttonbutton">
-  <button name="button" id="slider3" value="placeFunctionHere" type="submit">Click!</button>
-  <p>Value: <span class="button" id="slider3_value"></span></p>
-</div>
-
-<script>
-var slider3 = document.getElementById("slider3");
-var output3 = document.getElementById("slider3_value");
-output3.innerHTML = slider3.value;
-
-slider3.onclick = function() {
-  output3.innerHTML = slider3.value;
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-    }
-  };
-  xhttp.open("GET", "http://192.168.1.21:5000/set_button?state=" + slider3.value, true);
-  xhttp.send();
-}
-</script>
 
 
 <hr>
-
+<h2>Stepper Control</h2>
 
 <!-- rotate to left -->
 <div id="buttonbutton">
-  <button name="button" id="leftButt" value="tl" type="submit">LEFT</button>
-  <p>Value: <span class="button" id="leftButt_value"></span></p>
+  <button name="button" id="leftButt" value="LEFT" type="submit"></button>
 </div>
 
 <script>
 var leftButt = document.getElementById("leftButt");
-var leftButtOut = document.getElementById("leftButt_value");
+var leftButtOut = document.getElementById("leftButt");
 leftButtOut.innerHTML = leftButt.value;
 
 leftButt.onclick = function() {
   leftButtOut.innerHTML = leftButt.value;
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-    }
+    if (this.readyState == 4 && this.status == 200) {}
   };
   xhttp.open("GET", "http://192.168.1.21:5000/turn_wheel?state=" + leftButt.value, true);
   xhttp.send();
@@ -107,21 +54,19 @@ leftButt.onclick = function() {
 
 <!-- rotate to right -->
 <div id="buttonbutton">
-  <button name="button" id="rightButt" value="tr" type="submit">RIGHT</button>
-  <p>Value: <span class="button" id="rightButt_value"></span></p>
+  <button name="button" id="rightButt" value="RIGHT" type="submit"></button>
 </div>
 
 <script>
 var rightButt = document.getElementById("rightButt");
-var rightButtOut = document.getElementById("rightButt_value");
+var rightButtOut = document.getElementById("rightButt");
 rightButtOut.innerHTML = rightButt.value;
 
 rightButt.onclick = function() {
   rightButtOut.innerHTML = rightButt.value;
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-    }
+    if (this.readyState == 4 && this.status == 200) {}
   };
   xhttp.open("GET", "http://192.168.1.21:5000/turn_wheel?state=" + rightButt.value, true);
   xhttp.send();
