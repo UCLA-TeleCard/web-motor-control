@@ -36,6 +36,7 @@ except:
 
 # servo setup
 GPIO.setmode(GPIO.BOARD)
+GPIO.setup(7, GPIO.OUT)
 GPIO.setup(11, GPIO.OUT)
 
 # servo1 = TBD
@@ -56,7 +57,7 @@ def setAngle(motor, angle):
   time.sleep(0.5)
   motor.ChangeDutyCycle(0)
 
-atexit.register(turnOffMotors(servo1))
+# atexit.register(turnOffMotors(servo1))
 
 
 # WEB SERVER CODE ----------------------------------------------------------------------------------------------------
