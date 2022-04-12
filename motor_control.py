@@ -39,8 +39,11 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(11, GPIO.OUT)
 
 # servo1 = TBD
-servo1=GPIO.PWM(11, 50)
+servo1=GPIO.PWM(7, 50)
 servo1.start(0)
+
+servo2=GPIO.PWM(11, 50)
+servo2.start(0)
 
 
 def turnOffMotors(motor):
@@ -77,12 +80,22 @@ def web_interface():
 
 
 # different "pages" for each individual function
-@app.route("/set_servo")
+@app.route("/set_servo1")
 def set_angle():
   angle = int(request.args.get("angle"))
   print ("Received " + str(angle))
 
   setAngle(servo1, angle)
+
+  return ("Received " + str(angle))
+
+
+@app.route("/set_servo2")
+def set_angle():
+  angle = int(request.args.get("angle"))
+  print ("Received " + str(angle))
+
+  setAngle(servo2, angle)
 
   return ("Received " + str(angle))
 

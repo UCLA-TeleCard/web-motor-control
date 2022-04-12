@@ -4,24 +4,50 @@
 
 <h1>Servo Control</h1>
 
+<!-- Servo 1 -->
 <!-- Servo 0 to 180 degrees -->
 <div id="slidecontainer">
+  <p> Servo1</p>
   <input type="range" min="0" max="180" value="90" id="range1">
   <p>Value: <span id="range1_value"></span></p>
 </div>
 
 <script>
-var slider = document.getElementById("range1");
-var output = document.getElementById("range1");
-output.innerHTML = slider.value;
+var slider1 = document.getElementById("range1");
+var output1 = document.getElementById("range1_value");
+output1.innerHTML = slider1.value;
 
-slider.oninput = function() {
-  output.innerHTML = slider.value;
+slider1.oninput = function() {
+  output1.innerHTML = slider1.value;
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {}
 };
-  xhttp.open("GET", "http://192.168.1.21:5000/set_servo?angle=" + slider.value, true);
+  xhttp.open("GET", "http://192.168.1.21:5000/set_servo1?angle=" + slider1.value, true);
+  xhttp.send();
+}
+</script>
+
+
+<!-- Servo 2 -->
+<div id="slidecontainer2">
+  <p> Servo1</p>
+  <input type="range" min="0" max="180" value="90" id="range2">
+  <p>Value: <span id="range2_value"></span></p>
+</div>
+
+<script>
+var slider2 = document.getElementById("range2");
+var output2 = document.getElementById("range2_value");
+output2.innerHTML = slider2.value;
+
+slider2.oninput = function() {
+  output2.innerHTML = slider2.value;
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+};
+  xhttp.open("GET", "http://192.168.1.21:5000/set_servo2?angle=" + slider2.value, true);
   xhttp.send();
 }
 </script>
