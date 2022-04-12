@@ -28,31 +28,37 @@ except:
    exit()
 
 
-# initialize the web server
-app = Flask(__name__)
+
 
 # initialize the GPIO pins, using the following Pin#'s:
-# http://www.rpi-spy.co.uk/wp-content/uploads/2012/06/Raspberry-Pi-GPIO-Layout-Model-B-Plus-rotated-2700x900.png 
-# GPIO.setmode(GPIO.BOARD)
-# GPIO.setup(11, GPIO.OUT)
+# https://www.windtopik.fr/wp-content/uploads/2014/11/RPI-GPIO-N-.png
+# https://www.youtube.com/watch?v=xHDT4CwjUQE
 
-# pwm=GPIO.PWM(11, 50)
-# pwm.start(0)
+# servo setup
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(11, GPIO.OUT)
 
-# def turnOffMotors():
-#   pwm.stop()
-#   GPIO.cleanup()
+# servo1 = TBD
+servo1=GPIO.PWM(11, 50)
+servo1.start(0)
 
-# def setAngle(angle):
-#     duty = angle / 18 + 3
-#     GPIO.output(11, True)
-#     pwm.ChangeDutyCycle(duty)
-#     sleep(1)
-#     GPIO.output(11, False)
-#     pwm.ChangeDutyCycle(duty)
 
-# atexit.register(turnOffMotors)
+def turnOffMotors(motor):
+  motor.stop()
+  GPIO.cleanup()
 
+def setAngle(motor, angle):
+  motor.ChangeDutyCycle(2+(angle/18))
+  time.sleep(0.5)
+  motor.ChangeDutyCycle(0)
+
+atexit.register(turnOffMotors(servo1))
+
+
+# WEB SERVER CODE ----------------------------------------------------------------------------------------------------
+
+# initialize the web server
+app = Flask(__name__)
 
 # defines the home page 
 @app.route("/")
@@ -108,7 +114,6 @@ def turn_wheel():
   # sleep(1)
   
   return ("Received " + str(butt))
-
 
 
 
