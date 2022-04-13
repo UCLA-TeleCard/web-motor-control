@@ -75,6 +75,7 @@ def web_interface():
   html.close()
 
   setAngle(servo1, 90)
+  setAngle(servo2, 90)
 
   return response
 
