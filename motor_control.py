@@ -82,7 +82,7 @@ def web_interface():
 
 # different "pages" for each individual function
 @app.route("/set_servo1")
-def set_angle():
+def set_angle1():
   angle = int(request.args.get("angle"))
   print ("Received " + str(angle))
 
@@ -92,7 +92,7 @@ def set_angle():
 
 
 @app.route("/set_servo2")
-def set_angle():
+def set_angle2():
   angle = int(request.args.get("angle"))
   print ("Received " + str(angle))
 

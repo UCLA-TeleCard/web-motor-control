@@ -53,10 +53,10 @@ void setup() {
 void loop() {
   if (Serial.available()) {  // check for incoming serial data
   String command = Serial.readString();  // read command from serial port
-    if (command == "tl") {  // turns stepper left
+    if (command == "LEFT") {  // turns stepper left
        myProDriver.step(400, 0); // turn 400 steps, CW direction
     }
-    else if (command == "tr") {  // turns stepper right
+    else if (command == "RIGHT") {  // turns stepper right
        myProDriver.step(400, 1); // turn 400 steps, CCW direction
     }
   }
