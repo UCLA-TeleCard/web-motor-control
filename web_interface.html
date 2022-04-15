@@ -2,6 +2,11 @@
 <html>
 <body>
 
+<!-- change IP address here (to the Pi) -->
+<script type="text/javascript">
+  var ip_a = "169.254.217.110"
+</script>
+
 <h1>Servo Control</h1>
 
 <!-- Servo 1 -->
@@ -23,7 +28,7 @@ slider1.oninput = function() {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {}
 };
-  xhttp.open("GET", "http://192.168.1.21:5000/set_servo1?angle=" + slider1.value, true);
+  xhttp.open("GET", "http://" + ip_a + ":5000/set_servo1?angle=" + slider1.value, true);
   xhttp.send();
 }
 </script>
@@ -47,7 +52,7 @@ slider2.oninput = function() {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {}
 };
-  xhttp.open("GET", "http://192.168.1.21:5000/set_servo2?angle=" + slider2.value, true);
+  xhttp.open("GET", "http://" + ip_a + ":5000/set_servo2?angle=" + slider2.value, true);
   xhttp.send();
 }
 </script>
@@ -73,7 +78,7 @@ leftButt.onclick = function() {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {}
   };
-  xhttp.open("GET", "http://192.168.1.21:5000/turn_wheel?state=" + leftButt.value, true);
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + leftButt.value, true);
   xhttp.send();
 }
 </script>
@@ -94,7 +99,7 @@ rightButt.onclick = function() {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {}
   };
-  xhttp.open("GET", "http://192.168.1.21:5000/turn_wheel?state=" + rightButt.value, true);
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + rightButt.value, true);
   xhttp.send();
 }
 </script>
