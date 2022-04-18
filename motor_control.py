@@ -111,7 +111,7 @@ def set_angle3():
   speed = int(request.args.get("speed"))
   print ("Received " + str(speed))
 # 3.5 to 11.5 duty cycle
-# 7.5 = stop position
+# 7.0? = stop position
   servo3.ChangeDutyCycle(speed/10)
   sleep(0.5)
 
