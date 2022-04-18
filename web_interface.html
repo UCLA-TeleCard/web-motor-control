@@ -36,7 +36,7 @@ slider1.oninput = function() {
 
 <!-- Servo 2 -->
 <div id="slidecontainer2">
-  <p> Servo1</p>
+  <p> Servo2</p>
   <input type="range" min="0" max="180" value="90" id="range2">
   <p>Value: <span id="range2_value"></span></p>
 </div>
@@ -57,10 +57,33 @@ slider2.oninput = function() {
 }
 </script>
 
+<h2>Continuous Servo Control</h2>
+
+<div id="slidecontainer3">
+  <p> Servo3</p>
+  <input type="range" min="35" max="115" value="75" id="range3">
+  <p>Value: <span id="range3_value"></span></p>
+</div>
+
+<script>
+var slider3 = document.getElementById("range3");
+var output3 = document.getElementById("range3_value");
+output3.innerHTML = slider3.value;
+
+slider3.oninput = function() {
+  output3.innerHTML = slider3.value;
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+};
+  xhttp.open("GET", "http://" + ip_a + ":5000/set_servo3?speed=" + slider3.value, true);
+  xhttp.send();
+}
+</script>
 
 
 <hr>
-<h2>Stepper Control</h2>
+<h3>Stepper Control</h3>
 
 <!-- rotate to left -->
 <div id="buttonbutton">

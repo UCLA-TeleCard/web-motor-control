@@ -38,6 +38,7 @@ except:
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(7, GPIO.OUT)
 GPIO.setup(11, GPIO.OUT)
+GPIO.setup(13, GPIO.OUT)
 
 # servo1 = TBD
 servo1=GPIO.PWM(7, 50)
@@ -45,6 +46,9 @@ servo1.start(0)
 
 servo2=GPIO.PWM(11, 50)
 servo2.start(0)
+
+servo3=GPIO.PWM(13, 50)
+servo3.start(0)
 
 
 def turnOffMotors(motor):
@@ -101,6 +105,17 @@ def set_angle2():
 
   return ("Received " + str(angle))
 
+
+@app.route("/set_servo3")
+def set_angle3():
+  speed = int(request.args.get("speed"))
+  print ("Received " + str(speed))
+# 3.5 to 11.5 duty cycle
+# 7.5 = stop position
+  servo3.ChangeDutyCycle(speed/10)
+  sleep(0.5)
+
+  return ("Received " + str(speed))
 
 
 @app.route("/turn_wheel")
