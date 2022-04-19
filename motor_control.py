@@ -36,6 +36,7 @@ except:
 
 # servo setup
 GPIO.setmode(GPIO.BOARD)
+
 GPIO.setup(7, GPIO.OUT)
 GPIO.setup(11, GPIO.OUT)
 GPIO.setup(13, GPIO.OUT)
@@ -49,6 +50,9 @@ servo2.start(0)
 
 servo3=GPIO.PWM(13, 50)
 servo3.start(0)
+
+servo4=GPIO.PWM(15, 50)
+servo4.start(0)
 
 
 def turnOffMotors(motor):
