@@ -128,6 +128,7 @@ def turn_wheel():
   print ("Received " + str(butt))
   usb.write(str(butt).encode(encoding="utf-8"))
   return ("Received " + str(butt))
+  return render_template("web_interface.html", data=data)
 
 
 
