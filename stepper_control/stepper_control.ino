@@ -27,9 +27,15 @@
 #include "SparkFun_ProDriver_TC78H670FTG_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_ProDriver
 PRODRIVER myProDriver; //Create instance of this object
 
+int leadLimit = 11;
+int wheelLimit = 13;
+
 void setup() {
   Serial.begin(115200);
   Serial.println("SparkFun ProDriver TC78H670FTG Example 2");
+
+  pinMode(leadLimit, INPUT);
+  pinMode(wheelLimit, INPUT);
 
   //***** Configure the ProDriver's Settings *****//
   // Note, we must change settings BEFORE calling the .begin() function.
@@ -48,6 +54,17 @@ void setup() {
   // myProDriver.settings.stepResolutionMode = PRODRIVER_STEP_RESOLUTION_FIXED_1_128; // 1/128 step
 
   myProDriver.begin(); // adjust custom settings before calling this
+
+  // ZEROING PROCESS
+  // if already zeroed, move up and try again
+  if(digitalRead(leadLimit) == HIGH){
+    myProDriver.step(100, 1)
+  }
+  // keep checking for limit switch while moving down
+  while(digitalRead(leadLimit) != HIGH){
+    myProDriver.step(1, 0)
+  }
+
 }
 
 void loop() {
