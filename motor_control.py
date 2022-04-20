@@ -5,9 +5,10 @@ USB_PORT = "/dev/ttyACM0"  # Arduino Uno R3 Compatible
 # import all the required libraries:
 # flask for web server hosting
 # GPIO communicates with motors / servos
-from flask import Flask
-from flask import request
-
+from flask_socketio import SocketIO, emit
+from flask import Flask, render_template, url_for, copy_current_request_context, request
+from random import random
+from threading import Thread, Event
 import time
 import atexit
 import serial
@@ -54,6 +55,14 @@ servo3.start(0)
 servo4=GPIO.PWM(15, 50)
 servo4.start(0)
 
+# initialize variables
+stepsLead = 0
+stepsLeadOld = 0
+stepsWheel = 0
+stepsWheelOld = 0
+
+
+# FUNCTIONS ----------------------------------------------------------------------------------------------------------
 
 def turnOffMotors(motor):
   motor.stop()
@@ -65,6 +74,28 @@ def setAngle(motor, angle):
   time.sleep(0.5)
   motor.ChangeDutyCycle(0)
 
+# placeholder dynamic update function
+def randomNumberGenerator():
+  """
+  Generate a random number every 2 seconds and emit to a socketio instance (broadcast)
+  Ideally to be run in a separate thread?
+  """
+  #infinite loop of magical random numbers
+  print("Making random numbers")
+  while not thread_stop_event.is_set():
+      number = round(random()*10, 3)
+      print(number)
+      socketio.emit('newnumber', {'number': number}, namespace='/steps')
+      socketio.sleep(2)
+
+# count stepper positions
+def stepperCounter(stepsLoc, stepsLocOld):
+  while not thread_stop_event.is_set():
+    if stepsLoc != stepsLocOld:
+      socketio.emit("newnumber", {'number': stepsLoc}, namespace='/steps')
+      stepsLocOld = stepsLoc
+    socketio.sleep(0.1)
+
 # atexit.register(turnOffMotors(servo1))
 
 
@@ -72,6 +103,15 @@ def setAngle(motor, angle):
 
 # initialize the web server
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+app.config['DEBUG'] = True
+
+#turn the flask app into a socketio app
+socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
+
+#async updater Thread
+thread = Thread()
+thread_stop_event = Event()
 
 
 
@@ -85,7 +125,7 @@ def web_interface():
   setAngle(servo1, 90)
   setAngle(servo2, 90)
 
-  return response
+  return render_template('web_interface.html')
 
 
 
@@ -132,9 +172,38 @@ def turn_wheel():
 
 
 
+# DYNAMIC CODE -------------------------------------------------------------------------
+
+@socketio.on('connect', namespace='/steps')
+def test_connect():
+    # need visibility of the global thread object
+    global thread
+    print('Client connected')
+
+    #Start the stepper ounter thread only if the thread has not been started before.
+    if not thread.is_alive():
+        print("Starting Thread")
+        # thread = socketio.start_background_task(randomNumberGenerator)
+        thread = socketio.start_background_task(stepperCounter)
+
+@socketio.on('disconnect', namespace='/steps')
+def test_disconnect():
+    print('Client disconnected')
+
+
+
+
+# MAIN LOOP ----------------------------------------------------------------------------
+
 # allows connections from the local network
 def main():
-  app.run(host= '0.0.0.0')
+  socketio.run(app, host='0.0.0.0')
+  # app.run(host="0.0.0.0")
+
+
+
+
+
 
 try:
   main()
