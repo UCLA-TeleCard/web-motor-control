@@ -14,6 +14,7 @@ import atexit
 import serial
 import RPi.GPIO as GPIO
 from time import sleep
+from datetime import datetime 
 
 
 # Connect to USB serial port
@@ -56,12 +57,6 @@ servo3.start(0)
 servo4=GPIO.PWM(15, 50)
 servo4.start(0)
 
-# initialize variables
-stepsLead = 0
-stepsLeadOld = 0
-stepsWheel = 0
-stepsWheelOld = 0
-
 
 # FUNCTIONS ----------------------------------------------------------------------------------------------------------
 
@@ -90,11 +85,15 @@ def randomNumberGenerator():
       socketio.sleep(2)
 
 # count stepper positions
-def stepperCounter(stepsLoc, stepsLocOld):
+def stepperCounter():
+  global stepsLead
+  stepsLead = 0
+  global stepsLeadOld
+  stepsLeadOld = 1
   while not thread_stop_event.is_set():
-    if stepsLoc != stepsLocOld:
-      socketio.emit("newnumber", {'number': stepsLoc}, namespace='/steps')
-      stepsLocOld = stepsLoc
+    if stepsLead != stepsLeadOld:
+      socketio.emit('newnumber', {'number': int(stepsLead)}, namespace='/steps')
+      stepsLeadOld = stepsLead
     socketio.sleep(0.1)
 
 # atexit.register(turnOffMotors(servo1))
@@ -113,6 +112,7 @@ socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 #async updater Thread
 thread = Thread()
 thread_stop_event = Event()
+
 
 
 
@@ -165,11 +165,14 @@ def set_angle3():
 
 @app.route("/turn_wheel")
 def turn_wheel():
+  global stepsLead
   butt = request.args.get("state")
   print ("Received " + str(butt))
   usb.write(str(butt).encode(encoding="utf-8"))
+  sleep(0.5)
+  stepsLead = int(usb.readline().decode('utf-8').rstrip())
+  print (stepsLead)
   return ("Received " + str(butt))
-  return render_template("web_interface.html", data=data)
 
 
 
@@ -185,7 +188,7 @@ def test_connect():
     if not thread.is_alive():
         print("Starting Thread")
         # thread = socketio.start_background_task(randomNumberGenerator)
-        thread = socketio.start_background_task(stepperCounter(stepsLead, stepsLeadOld))
+        thread = socketio.start_background_task(stepperCounter)
 
 @socketio.on('disconnect', namespace='/steps')
 def test_disconnect():

@@ -29,10 +29,11 @@ PRODRIVER myProDriver; //Create instance of this object
 
 int leadLimit = 11;
 int wheelLimit = 13;
+int stepsLead = 0;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("SparkFun ProDriver TC78H670FTG Example 2");
+  // Serial.println("SparkFun ProDriver TC78H670FTG Example 2");
 
   pinMode(leadLimit, INPUT);
   pinMode(wheelLimit, INPUT);
@@ -57,13 +58,15 @@ void setup() {
 
   // ZEROING PROCESS
   // if already zeroed, move up and try again
-  if(digitalRead(leadLimit) == HIGH){
-    myProDriver.step(100, 1)
-  }
-  // keep checking for limit switch while moving down
-  while(digitalRead(leadLimit) != HIGH){
-    myProDriver.step(1, 0)
-  }
+//  if(digitalRead(leadLimit) == HIGH){
+//    myProDriver.step(100, 1);
+//  }
+//  // keep checking for limit switch while moving down
+//  while(digitalRead(leadLimit) != HIGH){
+//    myProDriver.step(1, 0);
+//  }
+//  
+//  Serial.println(stepsLead);
 
 }
 
@@ -72,9 +75,13 @@ void loop() {
   String command = Serial.readString();  // read command from serial port
     if (command == "LEFT") {  // turns stepper left
        myProDriver.step(400, 0); // turn 400 steps, CW direction
+       stepsLead += 400;
+       Serial.println(stepsLead);
     }
     else if (command == "RIGHT") {  // turns stepper right
        myProDriver.step(400, 1); // turn 400 steps, CCW direction
+       stepsLead -= 400;
+       Serial.println(stepsLead);
     }
   }
 }
