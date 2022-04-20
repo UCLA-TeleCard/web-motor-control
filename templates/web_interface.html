@@ -81,51 +81,177 @@ slider3.oninput = function() {
 }
 </script>
 
-
 <hr>
+
+<!-- STEPPER ------------------------------------------------------------------------------------------------------->
 <h3>Stepper Control</h3>
 
+<h4>Left</h4>
 <!-- rotate to left -->
+<!-- +1000 -->
 <div id="buttonbutton">
-  <button name="button" id="leftButt" value="LEFT" type="submit"></button>
+  <button name="button" id="left1000" value="L1000" type="submit"></button>
 </div>
-
 <script>
-var leftButt = document.getElementById("leftButt");
-var leftButtOut = document.getElementById("leftButt");
-leftButtOut.innerHTML = leftButt.value;
+var left1000 = document.getElementById("left1000");
+var left1000Out = document.getElementById("left1000");
+left1000Out.innerHTML = "+1000";
 
-leftButt.onclick = function() {
-  leftButtOut.innerHTML = leftButt.value;
+left1000.onclick = function() {
+  left1000Out.innerHTML = "+1000";
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {}
   };
-  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + leftButt.value, true);
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + left1000.value, true);
   xhttp.send();
 }
 </script>
 
+<!-- +100 -->
+<div id="buttonbutton">
+  <button name="button" id="left100" value="L100" type="submit"></button>
+</div>
+<script>
+var left100 = document.getElementById("left100");
+var left100Out = document.getElementById("left100");
+left100Out.innerHTML = "+100";
+
+left100.onclick = function() {
+  left100Out.innerHTML = "+100";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+  };
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + left100.value, true);
+  xhttp.send();
+}
+</script>
+
+<!-- +10 -->
+<div id="buttonbutton">
+  <button name="button" id="left10" value="L10" type="submit"></button>
+</div>
+<script>
+var left10 = document.getElementById("left10");
+var left10Out = document.getElementById("left10");
+left10Out.innerHTML = "+10";
+
+left10.onclick = function() {
+  left10Out.innerHTML = "+10";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+  };
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + left10.value, true);
+  xhttp.send();
+}
+</script>
+
+<!-- +1 -->
+<div id="buttonbutton">
+  <button name="button" id="left1" value="L1" type="submit"></button>
+</div>
+<script>
+var left1 = document.getElementById("left1");
+var left1Out = document.getElementById("left1");
+left1Out.innerHTML = "+1";
+
+left1.onclick = function() {
+  left1Out.innerHTML = "+1";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+  };
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + left1.value, true);
+  xhttp.send();
+}
+</script>
+
+
+<h4>Right</h4>
 <!-- rotate to right -->
+<!-- -1000 -->
 <div id="buttonbutton">
-  <button name="button" id="rightButt" value="RIGHT" type="submit"></button>
+  <button name="button" id="right1000" value="R1000" type="submit"></button>
 </div>
-
 <script>
-var rightButt = document.getElementById("rightButt");
-var rightButtOut = document.getElementById("rightButt");
-rightButtOut.innerHTML = rightButt.value;
+var right1000 = document.getElementById("right1000");
+var right1000Out = document.getElementById("right1000");
+right1000Out.innerHTML = "-1000";
 
-rightButt.onclick = function() {
-  rightButtOut.innerHTML = rightButt.value;
+right1000.onclick = function() {
+  right1000Out.innerHTML = "-1000";
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {}
   };
-  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + rightButt.value, true);
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + right1000.value, true);
   xhttp.send();
 }
 </script>
+
+<!-- -100 -->
+<div id="buttonbutton">
+  <button name="button" id="right100" value="R100" type="submit"></button>
+</div>
+<script>
+var right100 = document.getElementById("right100");
+var right100Out = document.getElementById("right100");
+right100Out.innerHTML = "-100";
+
+right100.onclick = function() {
+  right100Out.innerHTML = "-100";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+  };
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + right100.value, true);
+  xhttp.send();
+}
+</script>
+
+<!-- -10 -->
+<div id="buttonbutton">
+  <button name="button" id="right10" value="R10" type="submit"></button>
+</div>
+<script>
+var right10 = document.getElementById("right10");
+var right10Out = document.getElementById("right10");
+right10Out.innerHTML = "-10";
+
+right10.onclick = function() {
+  right10Out.innerHTML = "-10";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+  };
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + right10.value, true);
+  xhttp.send();
+}
+</script>
+
+<!-- -1 -->
+<div id="buttonbutton">
+  <button name="button" id="right1" value="R1" type="submit"></button>
+</div>
+<script>
+var right1 = document.getElementById("right1");
+var right1Out = document.getElementById("right1");
+right1Out.innerHTML = "-1";
+
+right1.onclick = function() {
+  right1Out.innerHTML = "-1";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+  };
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + right1.value, true);
+  xhttp.send();
+}
+</script>
+
+
 </body>
 
 
@@ -146,7 +272,7 @@ rightButt.onclick = function() {
 
 <div class="container" id="content">
   <div class="row">
-      <p>Asynchronous page updates will appear here:</p>
+      <p>Steps:</p>
       <div id="steps">
       </div> <!-- /#log -->
   </div>
