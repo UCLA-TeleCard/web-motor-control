@@ -19,7 +19,6 @@ from datetime import datetime
 
 # Connect to USB serial port
 try:
-  
   usb = serial.Serial(USB_PORT, 115200, timeout=2)
   usb.baudrate = 115200
   print("Arduino connected")
@@ -169,8 +168,11 @@ def turn_wheel():
   butt = request.args.get("state")
   print ("Received " + str(butt))
   usb.write(str(butt).encode(encoding="utf-8"))
-  sleep(0.5)
-  stepsLead = int(usb.readline().decode('utf-8').rstrip())
+  # sleep(0.5)
+  stale = stepsLead
+  while (stepsLead == stale):
+    stepsLead = int(usb.readline().decode('utf-8').rstrip())
+    sleep(0.1)
   print (stepsLead)
   return ("Received " + str(butt))
 
