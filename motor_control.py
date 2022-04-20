@@ -185,7 +185,7 @@ def test_connect():
     if not thread.is_alive():
         print("Starting Thread")
         # thread = socketio.start_background_task(randomNumberGenerator)
-        thread = socketio.start_background_task(stepperCounter)
+        thread = socketio.start_background_task(stepperCounter(stepsLead, stepsLeadOld))
 
 @socketio.on('disconnect', namespace='/steps')
 def test_disconnect():
