@@ -41,6 +41,7 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(7, GPIO.OUT)
 GPIO.setup(11, GPIO.OUT)
 GPIO.setup(13, GPIO.OUT)
+GPIO.setup(15, GPIO.OUT)
 
 # servo1 = TBD
 servo1=GPIO.PWM(7, 50)
@@ -118,9 +119,9 @@ thread_stop_event = Event()
 # defines the home page 
 @app.route("/")
 def web_interface():
-  html = open("web_interface.html")
-  response = html.read().replace('\n', '')
-  html.close()
+  # html = open("web_interface.html")
+  # response = html.read().replace('\n', '')
+  # html.close()
 
   setAngle(servo1, 90)
   setAngle(servo2, 90)
