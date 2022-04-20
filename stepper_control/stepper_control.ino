@@ -77,39 +77,53 @@ void setup() {
 
 void loop() {
   if (Serial.available()) {  // check for incoming serial data
-  String command = Serial.readString();  // read command from serial port
-    if (command == "L1000") {  // turns stepper left
-       myProDriver.step(1000, UP); // CW direction
-       stepsLead += 1000;
+    String command = Serial.readString();  // read command from serial port
+    // split command into motor and step components
+    String motor = String(command.charAt(0));
+    command.remove(0, 1);
+    int steps = command.toInt();
+    
+    // choose the motor, direction, and steps
+    if(motor == "L"){
+      myProDriver.step(steps, UP);
+      stepsLead += steps;
     }
-    else if (command == "R1000") {  // turns stepper right
-       myProDriver.step(1000, DOWN); // CCW direction
-       stepsLead -= 1000;
+    else if (motor == "R"){
+      myProDriver.step(steps, DOWN);
+      stepsLead -= steps;
     }
-    else if (command == "L100") {  // turns stepper left
-       myProDriver.step(100, UP); // CW direction
-       stepsLead += 100;
-    }
-    else if (command == "R100") {  // turns stepper right
-       myProDriver.step(100, DOWN); // CCW direction
-       stepsLead -= 100;
-    }
-    else if (command == "L10") {  // turns stepper left
-       myProDriver.step(10, UP); // CW direction
-       stepsLead += 10;
-    }
-    else if (command == "R10") {  // turns stepper right
-       myProDriver.step(10, DOWN); // CCW direction
-       stepsLead -= 10;
-    }
-    else if (command == "L1") {  // turns stepper left
-       myProDriver.step(1, UP); // CW direction
-       stepsLead += 1;
-    }
-    else if (command == "R1") {  // turns stepper right
-       myProDriver.step(1, DOWN); // CCW direction
-       stepsLead -= 1;
-    }
-  Serial.println(stepsLead);
+    //   if (command == "L1000") {  // turns stepper left
+    //     myProDriver.step(1000, UP); // CW direction
+    //     stepsLead += 1000;
+    //   }
+    //   else if (command == "R1000") {  // turns stepper right
+    //     myProDriver.step(1000, DOWN); // CCW direction
+    //     stepsLead -= 1000;
+    //   }
+    //   else if (command == "L100") {  // turns stepper left
+    //     myProDriver.step(100, UP); // CW direction
+    //     stepsLead += 100;
+    //   }
+    //   else if (command == "R100") {  // turns stepper right
+    //     myProDriver.step(100, DOWN); // CCW direction
+    //     stepsLead -= 100;
+    //   }
+    //   else if (command == "L10") {  // turns stepper left
+    //     myProDriver.step(10, UP); // CW direction
+    //     stepsLead += 10;
+    //   }
+    //   else if (command == "R10") {  // turns stepper right
+    //     myProDriver.step(10, DOWN); // CCW direction
+    //     stepsLead -= 10;
+    //   }
+    //   else if (command == "L1") {  // turns stepper left
+    //     myProDriver.step(1, UP); // CW direction
+    //     stepsLead += 1;
+    //   }
+    //   else if (command == "R1") {  // turns stepper right
+    //     myProDriver.step(1, DOWN); // CCW direction
+    //     stepsLead -= 1;
+    //   }
+    Serial.println(stepsLead);
   }
 }
