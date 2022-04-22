@@ -169,10 +169,6 @@ def turn_wheel():
   print ("Received " + str(butt))
   usb.write(str(butt).encode(encoding="utf-8"))
   sleep(0.1)
-  # stale = stepsLead
-  # while (usb.readline().decode('utf-8').rstrip() == ''):
-  #   print(usb.readline().decode('utf-8').rstrip())
-  #   sleep(0.5)
   stepsLead = int(usb.readline().decode('utf-8').rstrip())
   print (stepsLead)
   return ("Received " + str(butt))
