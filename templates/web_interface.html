@@ -86,6 +86,27 @@ slider3.oninput = function() {
 <!-- STEPPER ------------------------------------------------------------------------------------------------------->
 <h3>Stepper Control</h3>
 
+<!-- Zero the stepper -->
+<div id="buttonbutton">
+  <button name="button" id="zero" value="Z0" type="submit"></button>
+</div>
+<script>
+var zero = document.getElementById("zero");
+var zeroOut = document.getElementById("zero");
+zeroOut.innerHTML = "ZERO";
+
+zero.onclick = function() {
+  zeroOut.innerHTML = "ZERO";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+  };
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + zero.value, true);
+  xhttp.send();
+}
+</script>
+
+
 <h4>Up</h4>
 <!-- rotate to left -->
 <!-- +1000 -->
@@ -297,7 +318,7 @@ right1.onclick = function() {
 
 
 
-
+<!--Dynamic Code --------------------------------------------------------------->
 <head>
   <script src="static/js/jquery.min.js"></script>
   <script type="text/javascript" src="static/js/socket.io.min.js"></script>
