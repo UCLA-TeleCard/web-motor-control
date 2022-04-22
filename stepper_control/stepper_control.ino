@@ -58,17 +58,6 @@ void setup() {
 
   myProDriver.begin(); // adjust custom settings before calling this
 
-  // ZEROING PROCESS
-  // if already zeroed, move up and try again
-//  if(digitalRead(leadLimit) == HIGH){
-//    myProDriver.step(100, UP);
-//  }
-//  // keep checking for limit switch while moving down
-//  while(digitalRead(leadLimit) != HIGH){
-//    myProDriver.step(1, DOWN);
-//  }
-//  
-//  Serial.println(stepsLead);/
 
 }
 
@@ -94,38 +83,19 @@ void loop() {
       Serial.println(stepsLead);
       myProDriver.step(steps, DOWN);
     }
-    //   if (command == "L1000") {  // turns stepper left
-    //     myProDriver.step(1000, UP); // CW direction
-    //     stepsLead += 1000;
-    //   }
-    //   else if (command == "R1000") {  // turns stepper right
-    //     myProDriver.step(1000, DOWN); // CCW direction
-    //     stepsLead -= 1000;
-    //   }
-    //   else if (command == "L100") {  // turns stepper left
-    //     myProDriver.step(100, UP); // CW direction
-    //     stepsLead += 100;
-    //   }
-    //   else if (command == "R100") {  // turns stepper right
-    //     myProDriver.step(100, DOWN); // CCW direction
-    //     stepsLead -= 100;
-    //   }
-    //   else if (command == "L10") {  // turns stepper left
-    //     myProDriver.step(10, UP); // CW direction
-    //     stepsLead += 10;
-    //   }
-    //   else if (command == "R10") {  // turns stepper right
-    //     myProDriver.step(10, DOWN); // CCW direction
-    //     stepsLead -= 10;
-    //   }
-    //   else if (command == "L1") {  // turns stepper left
-    //     myProDriver.step(1, UP); // CW direction
-    //     stepsLead += 1;
-    //   }
-    //   else if (command == "R1") {  // turns stepper right
-    //     myProDriver.step(1, DOWN); // CCW direction
-    //     stepsLead -= 1;
-    //   }
-    
+    // ZEROING PROCESS
+    else if (motor == "Z"){
+      stepsLead = 0;
+      Serial.println(stepsLead);
+      // if already zeroed, move up and try again
+      if(digitalRead(leadLimit) == HIGH){
+        myProDriver.step(200, UP);
+        delay(50);
+      }
+      // keep checking for limit switch while moving down
+      while(digitalRead(leadLimit) != HIGH){
+        myProDriver.step(1, DOWN);
+      }
+    }    
   }
 }
