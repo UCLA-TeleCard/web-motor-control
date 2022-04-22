@@ -86,7 +86,7 @@ slider3.oninput = function() {
 <!-- STEPPER ------------------------------------------------------------------------------------------------------->
 <h3>Stepper Control</h3>
 
-<h4>Left</h4>
+<h4>Up</h4>
 <!-- rotate to left -->
 <!-- +1000 -->
 <div id="buttonbutton">
@@ -104,6 +104,26 @@ left1000.onclick = function() {
     if (this.readyState == 4 && this.status == 200) {}
   };
   xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + left1000.value, true);
+  xhttp.send();
+}
+</script>
+
+<!-- +500 -->
+<div id="buttonbutton">
+  <button name="button" id="left500" value="L500" type="submit"></button>
+</div>
+<script>
+var left500 = document.getElementById("left500");
+var left500Out = document.getElementById("left500");
+left500Out.innerHTML = "+500";
+
+left500.onclick = function() {
+  left500Out.innerHTML = "+500";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+  };
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + left500.value, true);
   xhttp.send();
 }
 </script>
@@ -169,7 +189,7 @@ left1.onclick = function() {
 </script>
 
 
-<h4>Right</h4>
+<h4>Down</h4>
 <!-- rotate to right -->
 <!-- -1000 -->
 <div id="buttonbutton">
@@ -187,6 +207,26 @@ right1000.onclick = function() {
     if (this.readyState == 4 && this.status == 200) {}
   };
   xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + right1000.value, true);
+  xhttp.send();
+}
+</script>
+
+<!-- -500 -->
+<div id="buttonbutton">
+  <button name="button" id="right500" value="R500" type="submit"></button>
+</div>
+<script>
+var right500 = document.getElementById("right500");
+var right500Out = document.getElementById("right500");
+right500Out.innerHTML = "-500";
+
+right500.onclick = function() {
+  right500Out.innerHTML = "-500";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+  };
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + right500.value, true);
   xhttp.send();
 }
 </script>

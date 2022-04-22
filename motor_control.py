@@ -122,8 +122,8 @@ def web_interface():
   # response = html.read().replace('\n', '')
   # html.close()
 
-  setAngle(servo1, 90)
-  setAngle(servo2, 90)
+  # setAngle(servo1, 90)
+  # setAngle(servo2, 90)
 
   return render_template('web_interface.html')
 
@@ -168,11 +168,12 @@ def turn_wheel():
   butt = request.args.get("state")
   print ("Received " + str(butt))
   usb.write(str(butt).encode(encoding="utf-8"))
-  # sleep(0.5)
-  stale = stepsLead
-  while (stepsLead == stale):
-    stepsLead = int(usb.readline().decode('utf-8').rstrip())
-    sleep(0.1)
+  sleep(0.1)
+  # stale = stepsLead
+  # while (usb.readline().decode('utf-8').rstrip() == ''):
+  #   print(usb.readline().decode('utf-8').rstrip())
+  #   sleep(0.5)
+  stepsLead = int(usb.readline().decode('utf-8').rstrip())
   print (stepsLead)
   return ("Received " + str(butt))
 
