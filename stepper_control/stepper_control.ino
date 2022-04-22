@@ -43,7 +43,7 @@ void setup() {
   //***** Configure the ProDriver's Settings *****//
   // Note, we must change settings BEFORE calling the .begin() function.
   // For this example, we will try 1/2 step resolution.
-  myProDriver.settings.stepResolutionMode = PRODRIVER_STEP_RESOLUTION_FIXED_1_2;
+  myProDriver.settings.stepResolutionMode = PRODRIVER_STEP_RESOLUTION_FIXED_FULL;
 
   // The following lines of code are other options you can try out.
   // Comment-out the above settings declaration, and uncomment your desired setting below.
@@ -68,7 +68,7 @@ void setup() {
 //    myProDriver.step(1, DOWN);
 //  }
 //  
-  Serial.println(stepsLead);
+//  Serial.println(stepsLead);/
 
 }
 
@@ -85,12 +85,14 @@ void loop() {
     
     // choose the motor, direction, and steps
     if(motor == "L"){
-      myProDriver.step(steps, UP);
       stepsLead += steps;
+      Serial.println(stepsLead);
+      myProDriver.step(steps, UP);
     }
     else if (motor == "R"){
-      myProDriver.step(steps, DOWN);
       stepsLead -= steps;
+      Serial.println(stepsLead);
+      myProDriver.step(steps, DOWN);
     }
     //   if (command == "L1000") {  // turns stepper left
     //     myProDriver.step(1000, UP); // CW direction
@@ -124,6 +126,6 @@ void loop() {
     //     myProDriver.step(1, DOWN); // CCW direction
     //     stepsLead -= 1;
     //   }
-    Serial.println(stepsLead);
+    
   }
 }
