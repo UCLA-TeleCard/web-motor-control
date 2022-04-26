@@ -11,21 +11,43 @@
   Feel like supporting open source hardware?
   Buy a board from SparkFun! https://www.sparkfun.com/products/16836
 
+  This example controls two separate ProDrivers using Serial mode and individual LATCH pins.
+  When using Serial Mode, we can share all of the control pins with many ProDrivers,
+  But each ProDriver will need it's own unique latch pin.
+  Before calling .begin(), we will set the latch pin as needed.
+  
+  Things to note:
+    - Every control pin is shared EXCEPT latch (aka mode1Pin), so we must ensure all latches are low during
+      ANY instances call to begin().
+    - only full step (aka 1:1) control is supported via serial mode. No microstepping.
+
+  Feel like supporting open source hardware?
+  Buy a board from SparkFun! https://www.sparkfun.com/products/16836
+
   Hardware Connections:
 
-  ARDUINO --> PRODRIVER
-  D8 --> STBY
-  D7 --> EN
-  D6 --> MODE0
-  D5 --> MODE1
-  D4 --> MODE2
-  D3 --> MODE3
-  D2 --> ERR
+  ARDUINO --> PRODRIVERs
+  D8 --> STBY   PRODRIVER1 and PRODRIVER2
+  D7 --> EN     PRODRIVER1 and PRODRIVER2
+  D6 --> MODE0  PRODRIVER1 and PRODRIVER2
+  D5 --> MODE1  ***PRODRIVER1 only***       (LATCH PIN 1)
+  D4 --> MODE2  PRODRIVER1 and PRODRIVER2
+  D3 --> MODE3  PRODRIVER1 and PRODRIVER2
+  D2 --> ERR    PRODRIVER1 and PRODRIVER2
+
+  ARDUINO --> PRODRIVER2
+  D9 --> MODE1 ***PRODRIVER2 only***       (LATCH PIN 2)
+
 
 */
 
+
+
 #include "SparkFun_ProDriver_TC78H670FTG_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_ProDriver
-PRODRIVER myProDriver; //Create instance of this object
+PRODRIVER wheelDriver; //Create instance of this object
+PRODRIVER leadDriver;
+#define leadDriverLatchPin 9
+
 
 int leadLimit = 11;
 int wheelLimit = 13;
@@ -43,7 +65,7 @@ void setup() {
   //***** Configure the ProDriver's Settings *****//
   // Note, we must change settings BEFORE calling the .begin() function.
   // For this example, we will try 1/2 step resolution.
-  myProDriver.settings.stepResolutionMode = PRODRIVER_STEP_RESOLUTION_FIXED_FULL;
+//  myProDriver.settings.stepResolutionMode = PRODRIVER_STEP_RESOLUTION_FIXED_FULL;/
 
   // The following lines of code are other options you can try out.
   // Comment-out the above settings declaration, and uncomment your desired setting below.
@@ -56,7 +78,18 @@ void setup() {
   // myProDriver.settings.stepResolutionMode = PRODRIVER_STEP_RESOLUTION_FIXED_1_64; // 1/64 step
   // myProDriver.settings.stepResolutionMode = PRODRIVER_STEP_RESOLUTION_FIXED_1_128; // 1/128 step
 
-  myProDriver.begin(); // adjust custom settings before calling this
+
+  // myProDriver2
+  // Note, this must be setup first because of shared lines.
+  leadDriver.settings.controlMode = PRODRIVER_MODE_SERIAL;
+  leadDriver.settings.mode1Pin = leadDriverLatchPin; // latch pin
+  leadDriver.begin(); // calling this first ensure latch pin 2 will be low during other future .begin()s
+
+
+  // myProDriver1
+  // default latch pin is D5, so no need to change here
+  wheelDriver.settings.controlMode = PRODRIVER_MODE_SERIAL;
+  wheelDriver.begin();
 
 
 }
@@ -76,12 +109,12 @@ void loop() {
     if(motor == "L"){
       stepsLead += steps;
       Serial.println(stepsLead);
-      myProDriver.step(steps, UP);
+      leadDriver.step(steps, UP);
     }
     else if (motor == "R"){
       stepsLead -= steps;
       Serial.println(stepsLead);
-      myProDriver.step(steps, DOWN);
+      leadDriver.step(steps, DOWN);
     }
     // ZEROING PROCESS
     else if (motor == "Z"){
@@ -89,12 +122,12 @@ void loop() {
       Serial.println(stepsLead);
       // if already zeroed, move up and try again
       if(digitalRead(leadLimit) == HIGH){
-        myProDriver.step(200, UP);
+        leadDriver.step(200, UP);
         delay(50);
       }
       // keep checking for limit switch while moving down
       while(digitalRead(leadLimit) != HIGH){
-        myProDriver.step(1, DOWN);
+        leadDriver.step(1, DOWN);
       }
     }    
   }
