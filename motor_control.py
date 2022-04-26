@@ -162,6 +162,18 @@ def set_angle3():
   return ("Received " + str(speed))
 
 
+@app.route("/set_servo4")
+def set_angle4():
+  speed = int(request.args.get("speed"))
+  print ("Received " + str(speed))
+# 3.5 to 11.5 duty cycle
+# 7.0? = stop position
+  servo4.ChangeDutyCycle(speed/10)
+  sleep(0.5)
+
+  return ("Received " + str(speed))
+
+
 @app.route("/turn_wheel")
 def turn_wheel():
   global stepsLead

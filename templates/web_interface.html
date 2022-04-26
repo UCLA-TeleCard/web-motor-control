@@ -81,6 +81,33 @@ slider3.oninput = function() {
 }
 </script>
 
+
+<div id="slidecontainer4">
+  <p> Servo4</p>
+  <input type="range" min="0" max="140" value="70" id="range4">
+  <p>Value: <span id="range4_value"></span>/10% duty cycle</p>
+</div>
+
+<script>
+var slider4 = document.getElementById("range4");
+var output4 = document.getElementById("range4_value");
+output4.innerHTML = slider4.value;
+
+slider4.oninput = function() {
+  output4.innerHTML = slider4.value;
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+};
+  xhttp.open("GET", "http://" + ip_a + ":5000/set_servo4?speed=" + slider4.value, true);
+  xhttp.send()
+}
+</script>
+
+
+
+
+
 <hr>
 
 <!-- STEPPER ------------------------------------------------------------------------------------------------------->
