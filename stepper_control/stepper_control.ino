@@ -106,12 +106,12 @@ void loop() {
     int steps = command.toInt();
     
     // choose the motor, direction, and steps
-    if(motor == "L"){
+    if(motor == "U"){
       stepsLead += steps;
       Serial.println(stepsLead);
       leadDriver.step(steps, UP);
     }
-    else if (motor == "R"){
+    else if (motor == "D"){
       stepsLead -= steps;
       Serial.println(stepsLead);
       leadDriver.step(steps, DOWN);
