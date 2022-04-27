@@ -109,12 +109,12 @@ void loop() {
     if(motor == "U"){
       stepsLead += steps;
       Serial.println(stepsLead);
-      leadDriver.step(steps, UP);
+      leadDriver.stepSerial(steps, UP);
     }
     else if (motor == "D"){
       stepsLead -= steps;
       Serial.println(stepsLead);
-      leadDriver.step(steps, DOWN);
+      leadDriver.stepSerial(steps, DOWN);
     }
     // ZEROING PROCESS
     else if (motor == "Z"){
@@ -122,12 +122,12 @@ void loop() {
       Serial.println(stepsLead);
       // if already zeroed, move up and try again
       if(digitalRead(leadLimit) == HIGH){
-        leadDriver.step(200, UP);
+        leadDriver.stepSerial(200, UP);
         delay(50);
       }
       // keep checking for limit switch while moving down
       while(digitalRead(leadLimit) != HIGH){
-        leadDriver.step(1, DOWN);
+        leadDriver.stepSerial(1, DOWN);
       }
     }    
   }
