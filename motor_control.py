@@ -157,7 +157,6 @@ def set_angle3():
 # 3.5 to 11.5 duty cycle
 # 7.0? = stop position
   servo3.ChangeDutyCycle(speed/10)
-  sleep(0.5)
 
   return ("Received " + str(speed))
 
@@ -169,7 +168,6 @@ def set_angle4():
 # 3.5 to 11.5 duty cycle
 # 7.0? = stop position
   servo4.ChangeDutyCycle(speed/10)
-  sleep(0.5)
 
   return ("Received " + str(speed))
 
