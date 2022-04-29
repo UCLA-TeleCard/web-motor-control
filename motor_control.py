@@ -118,14 +118,12 @@ thread_stop_event = Event()
 # defines the home page 
 @app.route("/")
 def web_interface():
-  # html = open("web_interface.html")
-  # response = html.read().replace('\n', '')
-  # html.close()
+  return render_template('web_dashboard.html')
 
-  # setAngle(servo1, 90)
-  # setAngle(servo2, 90)
 
-  return render_template('web_interface.html')
+@app.route("/debug")
+def debug_interface():
+  return render_template('debug_interface.html')
 
 
 
