@@ -12,7 +12,8 @@ from threading import Thread, Event
 import time
 import atexit
 import serial
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
+import pigpio
 from time import sleep
 from datetime import datetime 
 
@@ -33,41 +34,48 @@ except:
 
 # initialize the GPIO pins, using the following Pin#'s:
 # https://www.windtopik.fr/wp-content/uploads/2014/11/RPI-GPIO-N-.png
+
+# NEW GPIO pin numbering
+# http://abyz.me.uk/rpi/pigpio/
+
 # https://www.youtube.com/watch?v=xHDT4CwjUQE
 
 # servo setup
-GPIO.setmode(GPIO.BOARD)
+pi = pigpio.pi()
+if not pi.connected:
+   exit()
 
-GPIO.setup(7, GPIO.OUT)
-GPIO.setup(11, GPIO.OUT)
-GPIO.setup(13, GPIO.OUT)
-GPIO.setup(15, GPIO.OUT)
+# Use Broadcom pin numbering
+servo1 = 4
+servo2 = 17
+servo3 = 27
+servo4 = 22
 
-# servo1 = TBD
-servo1=GPIO.PWM(7, 50)
-servo1.start(0)
+# start servos at 50Hz (standard for servos)
+pi.set_PWM_frequency(servo1, 50)
+pi.set_PWM_frequency(servo2, 50)
+pi.set_PWM_frequency(servo3, 50)
+pi.set_PWM_frequency(servo4, 50)
 
-servo2=GPIO.PWM(11, 50)
-servo2.start(0)
+# make the servo pins pwm output
+pi.set_mode(servo1, pigpio.OUTPUT)
+pi.set_mode(servo2, pigpio.OUTPUT)
+pi.set_mode(servo3, pigpio.OUTPUT)
+pi.set_mode(servo4, pigpio.OUTPUT)
 
-servo3=GPIO.PWM(13, 50)
-servo3.start(0)
-
-servo4=GPIO.PWM(15, 50)
-servo4.start(0)
 
 
 # FUNCTIONS ----------------------------------------------------------------------------------------------------------
 
-def turnOffMotors(motor):
-  motor.stop()
-  GPIO.cleanup()
+# def turnOffMotors(motor):
+#   motor.stop()
+  # GPIO.cleanup()
 
 # input = angle in degrees, between 0 and 180
-def setAngle(motor, angle):
-  motor.ChangeDutyCycle(2+(angle/18))
+def setPulseWidth(motor, pw):
+  pi.set_servo_pulsewidth(motor, pw)
   time.sleep(0.5)
-  motor.ChangeDutyCycle(0)
+  pi.set_servo_pulsewidth(motor, 0)
 
 # placeholder dynamic update function
 def randomNumberGenerator():
@@ -133,7 +141,7 @@ def set_angle1():
   angle = int(request.args.get("angle"))
   print ("Received " + str(angle))
 
-  setAngle(servo1, angle)
+  setPulseWidth(servo1, angle)
 
   return ("Received " + str(angle))
 
@@ -143,7 +151,7 @@ def set_angle2():
   angle = int(request.args.get("angle"))
   print ("Received " + str(angle))
 
-  setAngle(servo2, angle)
+  setPulseWidth(servo2, angle)
 
   return ("Received " + str(angle))
 
@@ -152,9 +160,8 @@ def set_angle2():
 def set_angle3():
   speed = int(request.args.get("speed"))
   print ("Received " + str(speed))
-# 3.5 to 11.5 duty cycle
-# 7.0? = stop position
-  servo3.ChangeDutyCycle(speed/10)
+
+  pi.set_servo_pulsewidth(servo3, speed)
 
   return ("Received " + str(speed))
 
@@ -163,9 +170,8 @@ def set_angle3():
 def set_angle4():
   speed = int(request.args.get("speed"))
   print ("Received " + str(speed))
-# 3.5 to 11.5 duty cycle
-# 7.0? = stop position
-  servo4.ChangeDutyCycle(speed/10)
+
+  pi.set_servo_pulsewidth(servo4, speed)
 
   return ("Received " + str(speed))
 
@@ -220,5 +226,6 @@ try:
   main()
 
 finally:
-  GPIO.cleanup()
+  # GPIO.cleanup()
+  pi.stop()
   print("Goodbye!")
