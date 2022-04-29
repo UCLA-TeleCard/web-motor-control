@@ -55,6 +55,8 @@ int stepsLead = 0;
 
 int UP = 1;
 int DOWN = 0;
+int LEFT = 1;
+int RIGHT = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -115,6 +117,16 @@ void loop() {
       stepsLead -= steps;
       Serial.println(stepsLead);
       leadDriver.stepSerial(steps, DOWN);
+    }
+    else if (motor == "L"){
+//      stepsLead -= steps;/
+      Serial.println(stepsLead);
+      wheelDriver.stepSerial(steps, LEFT);
+    }
+    else if (motor == "R"){
+//      stepsLead -= steps;/
+      Serial.println(stepsLead);
+      wheelDriver.stepSerial(steps, RIGHT);
     }
     // ZEROING PROCESS
     else if (motor == "Z"){
