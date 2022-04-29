@@ -10,12 +10,13 @@ Copy the code to the Raspberry Pi using ![SFTP](https://linux.die.net/man/1/sftp
 
 Install the required libraries:
 ```
-RPi.GPIO
+pigpio
 
 flask
 
 flask_socketio
 ```
+pigpio requires additional setup as outlined ![here](https://gist.github.com/tstellanova/8b1fb350a148eace6541b5fbd2c021ca).
 
 ## Usage
 Get the RPi IP address by running `ip a`. Ensure this matches the `ip_a` field in `./templates/web_interface.html`.
