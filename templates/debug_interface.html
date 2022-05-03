@@ -159,446 +159,85 @@ zero.onclick = function() {
   </tr>
   <tr>
     <td>
-      <!-- go up -->
-      <!-- +1000 up -->
-      <div id="buttonbutton">
-        <button name="button" id="up1000" value="U1000" type="submit"></button>
-      </div>
-      <script>
-      var up1000 = document.getElementById("up1000");
-      var up1000Out = document.getElementById("up1000");
-      up1000Out.innerHTML = "+1000";
-      
-      up1000.onclick = function() {
-        up1000Out.innerHTML = "+1000";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + up1000.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U1000')">+1000</button>
     </td>
     <td>
-      <!-- go down -->
-      <!-- -1000 down -->
-      <div id="buttonbutton">
-        <button name="button" id="down1000" value="D1000" type="submit"></button>
-      </div>
-      <script>
-      var down1000 = document.getElementById("down1000");
-      var down1000Out = document.getElementById("down1000");
-      down1000Out.innerHTML = "-1000";
-
-      down1000.onclick = function() {
-        down1000Out.innerHTML = "-1000";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + down1000.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D1000')">-1000</button>
     </td>
     <td>
-      <!-- rotate to left -->
-      <!-- +1000 left -->
-      <div id="buttonbutton">
-        <button name="button" id="left1000" value="L1000" type="submit"></button>
-      </div>
-      <script>
-      var left1000 = document.getElementById("left1000");
-      var left1000Out = document.getElementById("left1000");
-      left1000Out.innerHTML = "+1000";
-      
-      left1000.onclick = function() {
-        left1000Out.innerHTML = "+1000";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + left1000.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L1000')">+1000</button>
     </td>
     <td>
-      <!-- rotate to right -->
-      <!-- -1000 right -->
-      <div id="buttonbutton">
-        <button name="button" id="right1000" value="R1000" type="submit"></button>
-      </div>
-      <script>
-      var right1000 = document.getElementById("right1000");
-      var right1000Out = document.getElementById("right1000");
-      right1000Out.innerHTML = "-1000";
-
-      right1000.onclick = function() {
-        right1000Out.innerHTML = "-1000";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + right1000.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R1000')">-1000</button>
     </td>
   </tr>
   <tr>
     <td>
-      <!-- go up -->
-      <!-- +500 up -->
-      <div id="buttonbutton">
-        <button name="button" id="up500" value="U500" type="submit"></button>
-      </div>
-      <script>
-      var up500 = document.getElementById("up500");
-      var up500Out = document.getElementById("up500");
-      up500Out.innerHTML = "+500";
-      
-      up500.onclick = function() {
-        up500Out.innerHTML = "+500";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + up500.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U500')">+500</button>
     </td>
     <td>
-      <!-- go down -->
-      <!-- -500 down -->
-      <div id="buttonbutton">
-        <button name="button" id="down500" value="D500" type="submit"></button>
-      </div>
-      <script>
-      var down500 = document.getElementById("down500");
-      var down500Out = document.getElementById("down500");
-      down500Out.innerHTML = "-500";
-
-      down500.onclick = function() {
-        down500Out.innerHTML = "-500";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + down500.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D500')">-500</button>
     </td>
     <td>
-      <!-- +500 left -->
-      <div id="buttonbutton">
-        <button name="button" id="left500" value="L500" type="submit"></button>
-      </div>
-      <script>
-      var left500 = document.getElementById("left500");
-      var left500Out = document.getElementById("left500");
-      left500Out.innerHTML = "+500";
-
-      left500.onclick = function() {
-        left500Out.innerHTML = "+500";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + left500.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L500')">+500</button>
     </td>
     <td>
-      <!-- -500 right -->
-      <div id="buttonbutton">
-        <button name="button" id="right500" value="R500" type="submit"></button>
-      </div>
-      <script>
-      var right500 = document.getElementById("right500");
-      var right500Out = document.getElementById("right500");
-      right500Out.innerHTML = "-500";
-
-      right500.onclick = function() {
-        right500Out.innerHTML = "-500";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + right500.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R500')">-500</button>
     </td>
   </tr>
   <tr>
     <td>
-      <!-- go up -->
-      <!-- +100 up -->
-      <div id="buttonbutton">
-        <button name="button" id="up100" value="U100" type="submit"></button>
-      </div>
-      <script>
-      var up100 = document.getElementById("up100");
-      var up100Out = document.getElementById("up100");
-      up100Out.innerHTML = "+100";
-      
-      up100.onclick = function() {
-        up100Out.innerHTML = "+100";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + up100.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U100')">+100</button>
     </td>
     <td>
-      <!-- go down -->
-      <!-- -100 down -->
-      <div id="buttonbutton">
-        <button name="button" id="down100" value="D100" type="submit"></button>
-      </div>
-      <script>
-      var down100 = document.getElementById("down100");
-      var down100Out = document.getElementById("down100");
-      down100Out.innerHTML = "-100";
-
-      down100.onclick = function() {
-        down100Out.innerHTML = "-100";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + down100.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D100')">-100</button>
     </td>
     <td>
-      <!-- +100 left -->
-      <div id="buttonbutton">
-        <button name="button" id="left100" value="L100" type="submit"></button>
-      </div>
-      <script>
-      var left100 = document.getElementById("left100");
-      var left100Out = document.getElementById("left100");
-      left100Out.innerHTML = "+100";
-
-      left100.onclick = function() {
-        left100Out.innerHTML = "+100";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + left100.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L100')">+100</button>
     </td>
     <td>
-      <!-- -100 right -->
-      <div id="buttonbutton">
-        <button name="button" id="right100" value="R100" type="submit"></button>
-      </div>
-      <script>
-      var right100 = document.getElementById("right100");
-      var right100Out = document.getElementById("right100");
-      right100Out.innerHTML = "-100";
-
-      right100.onclick = function() {
-        right100Out.innerHTML = "-100";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + right100.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R100')">-100</button>
     </td>
   </tr>
   <tr>
     <td>
-      <!-- go up -->
-      <!-- +10 up -->
-      <div id="buttonbutton">
-        <button name="button" id="up10" value="U10" type="submit"></button>
-      </div>
-      <script>
-      var up10 = document.getElementById("up10");
-      var up10Out = document.getElementById("up10");
-      up10Out.innerHTML = "+10";
-      
-      up10.onclick = function() {
-        up10Out.innerHTML = "+10";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + up10.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U10')">+10</button>
     </td>
     <td>
-      <!-- go down -->
-      <!-- -10 down -->
-      <div id="buttonbutton">
-        <button name="button" id="down10" value="D10" type="submit"></button>
-      </div>
-      <script>
-      var down10 = document.getElementById("down10");
-      var down10Out = document.getElementById("down10");
-      down10Out.innerHTML = "-10";
-
-      down10.onclick = function() {
-        down10Out.innerHTML = "-10";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + down10.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D10')">-10</button>
     </td>
     <td>
-      <!-- +10 left -->
-      <div id="buttonbutton">
-        <button name="button" id="left10" value="L10" type="submit"></button>
-      </div>
-      <script>
-      var left10 = document.getElementById("left10");
-      var left10Out = document.getElementById("left10");
-      left10Out.innerHTML = "+10";
-
-      left10.onclick = function() {
-        left10Out.innerHTML = "+10";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + left10.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L10')">+10</button>
     </td>
     <td>
-      <!-- -10 right -->
-      <div id="buttonbutton">
-        <button name="button" id="right10" value="R10" type="submit"></button>
-      </div>
-      <script>
-      var right10 = document.getElementById("right10");
-      var right10Out = document.getElementById("right10");
-      right10Out.innerHTML = "-10";
-
-      right10.onclick = function() {
-        right10Out.innerHTML = "-10";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + right10.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R10')">-10</button>
     </td>
   </tr>
   <tr>
     <td>
-      <!-- go up -->
-      <!-- +1 up -->
-      <div id="buttonbutton">
-        <button name="button" id="up1" value="U1" type="submit"></button>
-      </div>
-      <script>
-      var up1 = document.getElementById("up1");
-      var up1Out = document.getElementById("up1");
-      up1Out.innerHTML = "+1";
-      
-      up1.onclick = function() {
-        up1Out.innerHTML = "+1";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + up1.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U1')">+1</button>
     </td>
     <td>
-      <!-- go down -->
-      <!-- -1 down -->
-      <div id="buttonbutton">
-        <button name="button" id="down1" value="D1" type="submit"></button>
-      </div>
-      <script>
-      var down1 = document.getElementById("down1");
-      var down1Out = document.getElementById("down1");
-      down1Out.innerHTML = "-1";
-
-      down1.onclick = function() {
-        down1Out.innerHTML = "-1";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + down1.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D1')">-1</button>
     </td>
     <td>
-      <!-- +1 left -->
-      <div id="buttonbutton">
-        <button name="button" id="left1" value="L1" type="submit"></button>
-      </div>
-      <script>
-      var left1 = document.getElementById("left1");
-      var left1Out = document.getElementById("left1");
-      left1Out.innerHTML = "+1";
-
-      left1.onclick = function() {
-        left1Out.innerHTML = "+1";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + left1.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L1')">+1</button>
     </td>
     <td>
-      <!-- -1 right -->
-      <div id="buttonbutton">
-        <button name="button" id="right1" value="R1" type="submit"></button>
-      </div>
-      <script>
-      var right1 = document.getElementById("right1");
-      var right1Out = document.getElementById("right1");
-      right1Out.innerHTML = "-1";
-
-      right1.onclick = function() {
-        right1Out.innerHTML = "-1";
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {}
-        };
-        xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + right1.value, true);
-        xhttp.send();
-      }
-      </script>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R1')">-1</button>
     </td>
   </tr>
+  <!-- button sending script -->
+  <script>
+    function sendData(url){
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {}
+      };
+      xhttp.open("GET", url, true);
+      xhttp.send();
+    }
+  </script>
 </table>
 
 
