@@ -14,6 +14,7 @@ import atexit
 import serial
 # import RPi.GPIO as GPIO
 import pigpio
+import RPi.GPIO as GPIO
 from time import sleep
 from datetime import datetime 
 
@@ -44,12 +45,15 @@ except:
 pi = pigpio.pi()
 if not pi.connected:
    exit()
+GPIO.setmode(GPIO.BCM)
 
 # Use Broadcom pin numbering
 servo1 = 4
 servo2 = 17
 servo3 = 27
 servo4 = 22
+
+PGate = 26
 
 # start servos at 50Hz (standard for servos)
 pi.set_PWM_frequency(servo1, 50)
@@ -62,6 +66,8 @@ pi.set_mode(servo1, pigpio.OUTPUT)
 pi.set_mode(servo2, pigpio.OUTPUT)
 pi.set_mode(servo3, pigpio.OUTPUT)
 pi.set_mode(servo4, pigpio.OUTPUT)
+
+GPIO.setup(PGate, GPIO.IN)
 
 
 
