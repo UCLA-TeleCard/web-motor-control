@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<!-- change IP address here (to the Pi) -->
+<script type="text/javascript">
+  var ip_a = "169.254.217.110"
+</script>
+
+
+<h1>Debug Interface</h1>
+<p ><a href=/ ><button>CLIENT SIDE</button></a></p>
+<hr>
+
+<table>
+  <tr>
+    <th>Servo Control</th>
+    <th>Continuous Servo Control</th>
+  </tr>
+  <tr>
+    <td>
+      <!-- Servo 1 -->
+      <!-- Servo 0 to 180 degrees -->
+      <div id="slidecontainer">
+        <p> Servo1</p>
+        <input type="range" min="500" max="2400" value="1500" id="range1">
+        <p>Value: <span id="range1_value"></span>μs</p>
+      </div>
+
+      <script>
+      var slider1 = document.getElementById("range1");
+      var output1 = document.getElementById("range1_value");
+      output1.innerHTML = slider1.value;
+
+      slider1.oninput = function() {
+        output1.innerHTML = slider1.value;
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {}
+      };
+        xhttp.open("GET", "http://" + ip_a + ":5000/set_servo1?angle=" + slider1.value, true);
+        xhttp.send();
+      }
+      </script>
+    </td>
+    <td>
+      <!-- Servo 3 -->
+      <div id="slidecontainer3">
+        <p> Servo3</p>
+        <input type="range" min="1200" max="1800" value="1500" id="range3">
+        <p>Value: <span id="range3_value"></span>μs</p>
+      </div>
+      
+      <script>
+      var slider3 = document.getElementById("range3");
+      var output3 = document.getElementById("range3_value");
+      output3.innerHTML = slider3.value;
+      
+      slider3.oninput = function() {
+        output3.innerHTML = slider3.value;
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {}
+      };
+        xhttp.open("GET", "http://" + ip_a + ":5000/set_servo3?speed=" + slider3.value, true);
+        xhttp.send();
+      }
+      </script>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <!-- Servo 2 -->
+      <div id="slidecontainer2">
+        <p> Servo2</p>
+        <input type="range" min="500" max="2400" value="1500" id="range2">
+        <p>Value: <span id="range2_value"></span>μs</p>
+      </div>
+
+      <script>
+      var slider2 = document.getElementById("range2");
+      var output2 = document.getElementById("range2_value");
+      output2.innerHTML = slider2.value;
+
+      slider2.oninput = function() {
+        output2.innerHTML = slider2.value;
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {}
+      };
+        xhttp.open("GET", "http://" + ip_a + ":5000/set_servo2?angle=" + slider2.value, true);
+        xhttp.send();
+      }
+      </script>
+    </td>
+    <td>
+      <!-- Servo 4 -->
+      <div id="slidecontainer4">
+        <p> Servo4</p>
+        <input type="range" min="1200" max="1800" value="1500" id="range4">
+        <p>Value: <span id="range4_value"></span>μs</p>
+      </div>
+      
+      <script>
+      var slider4 = document.getElementById("range4");
+      var output4 = document.getElementById("range4_value");
+      output4.innerHTML = slider4.value;
+      
+      slider4.oninput = function() {
+        output4.innerHTML = slider4.value;
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {}
+      };
+        xhttp.open("GET", "http://" + ip_a + ":5000/set_servo4?speed=" + slider4.value, true);
+        xhttp.send()
+      }
+      </script>
+    </td>
+  </tr>
+</table>
+
+
+
+
+
+<!-- STEPPER ------------------------------------------------------------------------------------------------------->
+<hr>
+<h3>Stepper Control</h3>
+
+<!-- Zero the stepper -->
+<div id="buttonbutton">
+  <button name="button" id="zero" value="Z0" type="submit"></button>
+</div>
+<script>
+var zero = document.getElementById("zero");
+var zeroOut = document.getElementById("zero");
+zeroOut.innerHTML = "ZERO";
+
+zero.onclick = function() {
+  zeroOut.innerHTML = "ZERO";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {}
+  };
+  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + zero.value, true);
+  xhttp.send();
+}
+</script>
+
+
+<!-- table for moving the steppers -->
+<table>
+  <tr>
+    <th>Up</th>
+    <th>Down</th>
+    <th>Left</th>
+    <th>Right</th>
+  </tr>
+  <tr>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U1000')">+1000</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D1000')">-1000</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L1000')">+1000</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R1000')">-1000</button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U500')">+500</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D500')">-500</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L500')">+500</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R500')">-500</button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U100')">+100</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D100')">-100</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L100')">+100</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R100')">-100</button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U10')">+10</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D10')">-10</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L10')">+10</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R10')">-10</button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U1')">+1</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D1')">-1</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L1')">+1</button>
+    </td>
+    <td>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R1')">-1</button>
+    </td>
+  </tr>
+  <!-- button sending script -->
+  <script>
+    function sendData(url){
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {}
+      };
+      xhttp.open("GET", url, true);
+      xhttp.send();
+    }
+  </script>
+</table>
+
+
+
+</body>
+
+
+
+
+<!--Dynamic Code --------------------------------------------------------------->
+<head>
+  <script src="static/js/jquery.min.js"></script>
+  <script type="text/javascript" src="static/js/socket.io.min.js"></script>
+  <script src="static/js/application.js"></script>
+  <!-- GET UPDATED JS FROM: -->
+  <!-- https://cdnjs.com/libraries/jquery | v3.6.0-->
+  <!-- https://cdnjs.com/libraries/socket.io | v4.4.1-->
+</head>
+<body>
+  
+</div>
+
+<div class="container" id="content">
+  <div class="row">
+      <p>Lead Screw Steps:</p>
+      <div id="steps">
+      </div> <!-- /#log -->
+  </div>
+</div>
+
+</body>
+
+
+
+
+
+</html>
+
