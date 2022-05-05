@@ -129,24 +129,7 @@
 <h3>Stepper Control</h3>
 
 <!-- Zero the stepper -->
-<div id="buttonbutton">
-  <button name="button" id="zero" value="Z0" type="submit"></button>
-</div>
-<script>
-var zero = document.getElementById("zero");
-var zeroOut = document.getElementById("zero");
-zeroOut.innerHTML = "ZERO";
-
-zero.onclick = function() {
-  zeroOut.innerHTML = "ZERO";
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {}
-  };
-  xhttp.open("GET", "http://" + ip_a + ":5000/turn_wheel?state=" + zero.value, true);
-  xhttp.send();
-}
-</script>
+<button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=Z0')">ZERO</button>
 
 
 <!-- table for moving the steppers -->
@@ -159,74 +142,76 @@ zero.onclick = function() {
   </tr>
   <tr>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U1000')">+1000</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=U1000')">+1000</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D1000')">-1000</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=D1000')">-1000</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L1000')">+1000</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=L1000')">+1000</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R1000')">-1000</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=R1000')">-1000</button>
     </td>
   </tr>
   <tr>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U500')">+500</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=U500')">+500</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D500')">-500</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=D500')">-500</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L500')">+500</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=L500')">+500</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R500')">-500</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=R500')">-500</button>
     </td>
   </tr>
   <tr>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U100')">+100</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=U100')">+100</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D100')">-100</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=D100')">-100</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L100')">+100</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=L100')">+100</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R100')">-100</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=R100')">-100</button>
     </td>
   </tr>
   <tr>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U10')">+10</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=U10')">+10</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D10')">-10</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=D10')">-10</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L10')">+10</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=L10')">+10</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R10')">-10</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=R10')">-10</button>
     </td>
   </tr>
   <tr>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=U1')">+1</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=U1')">+1</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=D1')">-1</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=D1')">-1</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=L1')">+1</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=L1')">+1</button>
     </td>
     <td>
-      <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?state=R1')">-1</button>
+      <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=R1')">-1</button>
     </td>
   </tr>
+</table>
+
   <!-- button sending script -->
   <script>
     function sendData(url){
@@ -238,8 +223,6 @@ zero.onclick = function() {
       xhttp.send();
     }
   </script>
-</table>
-
 
 
 </body>

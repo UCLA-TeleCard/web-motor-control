@@ -4,19 +4,18 @@ USB_PORT = "/dev/ttyACM0"  # Arduino Uno R3 Compatible
 
 # import all the required libraries:
 # flask for web server hosting
-# GPIO communicates with motors / servos
+# flask_socketio for websockets stuff
+# pigpio communicates with motors / servos using hardware timed PWM
+# GPIO for photogates
 from flask_socketio import SocketIO, emit
 from flask import Flask, render_template, url_for, copy_current_request_context, request
-from random import random
 from threading import Thread, Event
 import time
 import atexit
 import serial
-# import RPi.GPIO as GPIO
 import pigpio
 import RPi.GPIO as GPIO
 from time import sleep
-from datetime import datetime 
 
 
 # Connect to USB serial port
@@ -42,9 +41,11 @@ except:
 # https://www.youtube.com/watch?v=xHDT4CwjUQE
 
 # servo setup
+# initialzie hardware GPIO
 pi = pigpio.pi()
 if not pi.connected:
    exit()
+# initialize software GPIO
 GPIO.setmode(GPIO.BCM)
 
 # Use Broadcom pin numbering
@@ -67,35 +68,18 @@ pi.set_mode(servo2, pigpio.OUTPUT)
 pi.set_mode(servo3, pigpio.OUTPUT)
 pi.set_mode(servo4, pigpio.OUTPUT)
 
+# initialize photogate pins
 GPIO.setup(PGate, GPIO.IN)
 
 
 
 # FUNCTIONS ----------------------------------------------------------------------------------------------------------
 
-# def turnOffMotors(motor):
-#   motor.stop()
-  # GPIO.cleanup()
-
-# input = angle in degrees, between 0 and 180
+# input = pulsewidth in microseconds
 def setPulseWidth(motor, pw):
   pi.set_servo_pulsewidth(motor, pw)
   time.sleep(0.5)
   pi.set_servo_pulsewidth(motor, 0)
-
-# placeholder dynamic update function
-def randomNumberGenerator():
-  """
-  Generate a random number every 2 seconds and emit to a socketio instance (broadcast)
-  Ideally to be run in a separate thread?
-  """
-  #infinite loop of magical random numbers
-  print("Making random numbers")
-  while not thread_stop_event.is_set():
-      number = round(random()*10, 3)
-      print(number)
-      socketio.emit('newnumber', {'number': number}, namespace='/steps')
-      socketio.sleep(2)
 
 # count stepper positions
 def stepperCounter():
@@ -108,8 +92,6 @@ def stepperCounter():
       socketio.emit('newnumber', {'number': int(stepsLead)}, namespace='/steps')
       stepsLeadOld = stepsLead
     socketio.sleep(0.1)
-
-# atexit.register(turnOffMotors(servo1))
 
 
 # WEB SERVER CODE ----------------------------------------------------------------------------------------------------
@@ -127,7 +109,8 @@ thread = Thread()
 thread_stop_event = Event()
 
 
-
+# different "pages" for each individual function
+## CLIENT SIDE --------------------------------------
 
 # defines the home page 
 @app.route("/")
@@ -135,58 +118,45 @@ def web_interface():
   return render_template('web_dashboard.html')
 
 
+## DEBUG PAGE ----------------------------------------
+# debug webpage
 @app.route("/debug")
 def debug_interface():
   return render_template('debug_interface.html')
 
 
-
-# different "pages" for each individual function
 @app.route("/set_servo1")
 def set_angle1():
   angle = int(request.args.get("angle"))
-  print ("Received " + str(angle))
-
   setPulseWidth(servo1, angle)
-
   return ("Received " + str(angle))
 
 
 @app.route("/set_servo2")
 def set_angle2():
   angle = int(request.args.get("angle"))
-  print ("Received " + str(angle))
-
   setPulseWidth(servo2, angle)
-
   return ("Received " + str(angle))
 
 
 @app.route("/set_servo3")
 def set_angle3():
   speed = int(request.args.get("speed"))
-  print ("Received " + str(speed))
-
   pi.set_servo_pulsewidth(servo3, speed)
-
   return ("Received " + str(speed))
 
 
 @app.route("/set_servo4")
 def set_angle4():
   speed = int(request.args.get("speed"))
-  print ("Received " + str(speed))
-
   pi.set_servo_pulsewidth(servo4, speed)
-
   return ("Received " + str(speed))
 
 
-@app.route("/turn_wheel")
-def turn_wheel():
+@app.route("/turn_stepper")
+def turn_stepper():
   global stepsLead
   butt = request.args.get("state")
-  print ("Received " + str(butt))
   usb.write(str(butt).encode(encoding="utf-8"))
   sleep(0.1)
   stepsLead = int(usb.readline().decode('utf-8').rstrip())
@@ -225,13 +195,10 @@ def main():
 
 
 
-
-
-
 try:
   main()
 
 finally:
-  # GPIO.cleanup()
+  GPIO.cleanup()
   pi.stop()
   print("Goodbye!")
