@@ -61,6 +61,8 @@ int RIGHT = 0;
 int leadMax = 2700;
 int leadMin = 0;
 
+bool isZeroed = false;
+
 void setup() {
   Serial.begin(115200);
 
@@ -113,7 +115,26 @@ void loop() {
     int steps = command.toInt();
     
     // choose the motor, direction, and steps
-    if(motor == "U"){
+
+    // a "go to location" command for the lead screw
+    // checks that stepper is zeroed first
+    if (motor == "X" && isZeroed){
+      // ensures the position is within the possible range
+      steps = constrain(steps, leadMin, leadMax);
+      Serial.println(steps);
+      int stepsDiff = steps - stepsLead;
+      // if positive diff, stepper needs to move up
+      if (stepsDiff > 0){
+        leadDriver.stepSerial(stepsDiff, UP);
+      }
+      // if negative, stepper moves down
+      else {
+        leadDriver.stepSerial(stepsDiff, DOWN);
+      }
+      stepsLead = steps;
+    }
+
+    else if (motor == "U"){
       stepsLead += steps;
       Serial.println(stepsLead);
       leadDriver.stepSerial(steps, UP);
@@ -133,6 +154,7 @@ void loop() {
       Serial.println(stepsLead);
       wheelDriver.stepSerial(steps, RIGHT);
     }
+    
     // ZEROING PROCESS
     else if (motor == "Z"){
       stepsLead = 0;
@@ -142,10 +164,15 @@ void loop() {
         leadDriver.stepSerial(200, UP);
         delay(50);
       }
+      // 5% current limit so nothing breaks if limit switch fails
+      leadDriver.setCurrentLimit(51);
       // keep checking for limit switch while moving down
       while(digitalRead(leadLimit) != HIGH){
         leadDriver.stepSerial(1, DOWN);
       }
+      // return to normal current
+      leadDriver.setCurrentLimit(256);
+      isZeroed = true;
     }    
   }
 }
