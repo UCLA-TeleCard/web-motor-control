@@ -5,9 +5,12 @@ USB_PORT = "/dev/ttyACM0"  # Arduino Uno R3 Compatible
 # import all the required libraries:
 # flask for web server hosting
 # GPIO communicates with motors / servos
+from asyncio.windows_events import NULL
+from email.charset import SHORTEST
 from fileinput import close
 from functools import update_wrapper
 from os import system
+from pickle import FALSE
 from shutil import move
 from turtle import update
 from urllib.request import CacheFTPHandler
@@ -78,9 +81,15 @@ DEALER_GATE = 0
 WHEEL_GATE = 1
 LEFT = 0
 RIGHT = 1
+CENTER = 2
+EMPTY = False
+FULL = True
 # Experimentally determine the ideal servo posiitons
 CLAW_OPEN = 140
 CLAW_CLOSED = 145
+STRAIGHT_UP = 100
+DISCARD_POSITION = 120
+FLIPPED_POSITION = -120
 # Experimentally determine the ideal stepper w lead screw posiitons
 TOP = 100
 MIDDLE = 50
@@ -88,6 +97,7 @@ BOTTOM = 0
 # Experimentally determine the number of steps 
 # that the wheel motor should turn to swap between cards
 CARD_STEP = 100
+
 
 # HELPER FUNCTIONS ----------------------------------------------------------------------------------------------------------
 
@@ -128,6 +138,7 @@ def stepperCounter():
     socketio.sleep(0.1)
 
 def updatePosition(direction):
+  #called as part of turnWheel() only. 
   # Moving the wheel left increases the number, 
   # Moving the wheel right decreases it
   if direction == LEFT:
@@ -135,23 +146,47 @@ def updatePosition(direction):
       currentPosition = 0
     else:
       currentPosition += 1 
-  else:
+  elif direction == RIGHT:
     if currentPosition ==0:
       currentPosition = 12
-    else:
+    else: 
       currentPosition -= 1 
+  # if direction = CENTER, do nothing
 
-def updateRecord():
+def getWheelStatus():
   # use photogate to update record of which slots are full 
-  wheel[currentPosition] = cardDetected(WHEEL_GATE)
-
-def findClosestEmpty():
-  
+  # return a bool of whether gate is blocked
+  status = cardDetected(WHEEL_GATE)
+  # automatically update the internal record with the new data
+  wheel[currentPosition] = status
+  return status 
 
 def cardDetected(gate):
-    #return a bool of whether gate is blocked
-    status = True
-    return status 
+  #use the photogate-sensing libraries to get a bool value for the specified photogate
+  status = True
+  return status
+
+def findClosestEmpty():
+  shortestDist = 100
+  closestEmpty = -1
+  # calculate the closest empty position in the wheel, return the direction to turn (right, left, or go straight up) 
+  # run a calculation based on the existing record to find the shortest distance to an empty slot. 
+  for i in range(0,12):
+    if wheel[i] == EMPTY:
+      if np.abs(i-currentPosition) < np.abs(shortestDist):
+        shortestDist = i-currentPosition
+        closestEmpty = i
+   # return null if the wheel is full
+    if closestEmpty == -1:
+      return NULL
+   # otherwise, return the direction to turn 
+    else:
+      if shortestDist < 0:
+        return RIGHT 
+      if shortestDist > 0: 
+        return LEFT
+      else:
+        return CENTER
 
 def openClaw():
   setAngle(grabber, CLAW_OPEN)
@@ -170,35 +205,79 @@ def moveGrabber(position):
 def turnWheel(direction):
   # code the direction and distance to travel into a serial message
   message = str(direction) + str(CARD_STEP)
+  # update this code to actually move the stepper motor in a given direction
   usb.write(message.encode(encoding="utf-8"))
   updatePosition(direction)
-  updateRecord()
+  getWheelStatus()
+
+def dealCardUp():
+  # Alter this code to run the continuous servo for the right amount of time
+  setAngle(dealerUp, 100)
+
+def dealCardDown():
+  # Alter this code to run the continuous servo for the right amount of time
+  setAngle(dealerUp, -100)
 
 # MAIN SYSTEM PROCESSES ----------------------------------------------------------------------------------------------------
 # Imported from the behavioral structure detailed in the Behavioral FLowchart. 
+
 def takeCardFromWheel():
   openClaw()
   moveGrabber(TOP)
+  time.sleep(50)
   closeClaw()
+  time.sleep(50)
   moveGrabber(MIDDLE)
-  updateRecord()
+  # We can choose to do something with this information (i.e. attempt process again) or not. 
+  getWheelStatus()
+  return True
 
 def placeCardIntoWheel():
-  if cardDetected(WHEEL_GATE):
+  if getWheelStatus() == FULL:
     direction = findClosestEmpty()
-    while cardDetected(WHEEL_GATE):
+    if direction == NULL:
+      # Wheel is full (notify higher-level processes)
+      return False
+    while getWheelStatus() == FULL:
       turnWheel(direction)
   moveGrabber(TOP)
   openClaw()
   moveGrabber(MIDDLE)
   closeClaw()
-
-
+  getWheelStatus()
+  return True
 
 def drawCardFromDeck():
+  for i in range(3):
+    dealCardUp()
+    if cardDetected(DEALER_GATE) :
+      break
+    # Dealer Box is Empty or Jammed
+    return False
+  openClaw()
+  moveGrabber(BOTTOM)
+  closeClaw()
+  moveGrabber(MIDDLE)
+  return True
+  
 def discardFaceUp():
+  setAngle(flipper, FLIPPED_POSITION)
+  openClaw()
+  time.sleep(100)
+  setAngle(flipper, STRAIGHT_UP)
+  closeClaw()
+  return True
+
 def discardFaceDown():
+  setAngle(flipper, DISCARD_POSITION)
+  openClaw()
+  time.sleep(100)
+  setAngle(flipper, STRAIGHT_UP)
+  closeClaw()
+  return True
+
 def dealerBoxButton(): 
+  dealCardDown()
 # atexit.register(turnOffMotors(servo1))
 
 
@@ -249,12 +328,18 @@ def web_interface():
 def DCFW():
     print ("Received DCIW")
     if systemState == CARD_HELD:
-        placeCardIntoWheel()
-        systemState = STANDBY_FULL
+        if placeCardIntoWheel():
+          systemState = STANDBY_FULL
+        else:
+          return("Error: Wheel Full")
     else:
-        drawCardFromDeck()
-        placeCardIntoWheel()
-        systemState = STANDBY_FULL
+        if drawCardFromDeck():
+          if placeCardIntoWheel():
+            systemState = STANDBY_FULL
+          else:
+            return("Error: Wheel Full")
+        else:
+          return("Error: Dealer box is empty or jammed")
     return ("Received DCIW")
 
 # Place Card Into Wheel
@@ -262,8 +347,11 @@ def DCFW():
 def PCIW():
     print ("Received PCIW")
     if systemState == CARD_HELD:
-        placeCardIntoWheel()
-        
+      # Evaluate if operation was performed or if wheel was full 
+        if placeCardIntoWheel():
+          systemState = STANDBY_FULL
+        else:
+          return("Error: Wheel Full")
     else:
         return("Error- cannot perform action")
     return ("Received DCFW")
@@ -275,7 +363,8 @@ def DCFD():
     if systemState == CARD_HELD:
         return("Error- cannot perform action")
     else:
-      drawCardFromDeck()
+      if not drawCardFromDeck():
+        return("Error: Dealer box is empty or jammed")
     return ("Received DCFD")
 
 # Take Card From Wheel 
@@ -284,7 +373,6 @@ def TCFW():
     print ("Received TCFW")
     if systemState == STANDBY_FULL:
         takeCardFromWheel()
-        updateRecord()
     else:
       return("Error- cannot perform action")
     return ("Received TCFW")
@@ -298,16 +386,16 @@ def DFD():
     elif systemState == STANDBY_FULL:
       takeCardFromWheel()
       discardFaceDown()
-    elif systemState == STANDBY_EMPTY:
+    elif systemState == CARD_HELD:
       discardFaceDown()
-    # evalutate if 
-    if cardDetected(WHEEL_GATE):
+    # evalutate what the new system state should be 
+    if getWheelStatus() == FULL:
       systemState = STANDBY_FULL
     else:
       systemState = STANDBY_EMPTY
     return ("Received DFD")
 
-# Discard Face Down
+# Discard Face Up
 @app.route("/DFU")
 def DFU():
     print ("Received DFU")
@@ -316,10 +404,10 @@ def DFU():
     elif systemState == STANDBY_FULL:
       takeCardFromWheel()
       discardFaceUp()
-    elif systemState == STANDBY_EMPTY:
+    elif systemState == CARD_HELD:
       discardFaceUp()
-    # evalutate if 
-    if cardDetected(WHEEL_GATE):
+    # evalutate what the new system state should be 
+    if getWheelStatus() == FULL:
       systemState = STANDBY_FULL
     else:
       systemState = STANDBY_EMPTY
@@ -330,8 +418,9 @@ def DFU():
 def WL():
     print ("Received WL")
     turnWheel(LEFT)
+    # update the system state only if current state is not card_held
     if systemState != CARD_HELD:
-      if cardDetected(WHEEL_GATE):
+      if getWheelStatus() == FULL:
         systemState = STANDBY_FULL
       else:
         systemState = STANDBY_EMPTY
@@ -343,11 +432,13 @@ def WR():
     print ("Received WR")
     turnWheel(RIGHT)
     if systemState != CARD_HELD:
-      if cardDetected(WHEEL_GATE):
+      if getWheelStatus() == FULL:
         systemState = STANDBY_FULL
       else:
         systemState = STANDBY_EMPTY
     return ("Received WR")
+
+# Other or outdated website functions *********************************************************************************
 
 @app.route("/set_servo1")
 def set_angle1():
