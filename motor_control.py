@@ -125,6 +125,19 @@ def web_interface():
   return render_template('web_dashboard.html')
 
 
+@app.route("/DCFD")
+def DCFD():
+  butt = request.args.get("state")
+  if butt == "TRUE":
+    pi.set_servo_pulsewidth(servo3, 1300)
+    pi.set_servo_pulsewidth(servo4, 1300)
+    sleep(0.5)
+    pi.set_servo_pulsewidth(servo4, 0)
+    sleep(1.5)
+    pi.set_servo_pulsewidth(servo3, 0)
+  return True
+
+
 ## DEBUG PAGE ----------------------------------------
 # debug webpage
 @app.route("/debug")
