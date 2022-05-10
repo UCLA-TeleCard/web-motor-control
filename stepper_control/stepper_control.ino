@@ -58,6 +58,9 @@ int DOWN = 0;
 int LEFT = 1;
 int RIGHT = 0;
 
+int leadMax = 2700;
+int leadMin = 0;
+
 void setup() {
   Serial.begin(115200);
 
