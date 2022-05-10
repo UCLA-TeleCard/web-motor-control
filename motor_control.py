@@ -63,12 +63,17 @@ pi.set_PWM_frequency(servo1, 50)
 pi.set_PWM_frequency(servo2, 50)
 pi.set_PWM_frequency(servo3, 50)
 pi.set_PWM_frequency(servo4, 50)
+pi.set_PWM_frequency(servo5, 50)
+pi.set_PWM_frequency(servo6, 50)
 
 # make the servo pins pwm output
 pi.set_mode(servo1, pigpio.OUTPUT)
 pi.set_mode(servo2, pigpio.OUTPUT)
 pi.set_mode(servo3, pigpio.OUTPUT)
 pi.set_mode(servo4, pigpio.OUTPUT)
+pi.set_mode(servo5, pigpio.OUTPUT)
+pi.set_mode(servo6, pigpio.OUTPUT)
+
 
 # initialize photogate pins
 GPIO.setup(PGate, GPIO.IN)
