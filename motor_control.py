@@ -53,6 +53,8 @@ servo1 = 4
 servo2 = 17
 servo3 = 27
 servo4 = 22
+servo5 = 10
+servo6 = 9
 
 PGate = 26
 
@@ -151,6 +153,20 @@ def set_angle4():
   speed = int(request.args.get("speed"))
   pi.set_servo_pulsewidth(servo4, speed)
   return ("Received " + str(speed))
+
+
+@app.route("/set_servo5")
+def set_angle5():
+  angle = int(request.args.get("angle"))
+  setPulseWidth(servo5, angle)
+  return ("Received " + str(angle))
+
+
+@app.route("/set_servo6")
+def set_angle6():
+  angle = int(request.args.get("angle"))
+  setPulseWidth(servo6, angle)
+  return ("Received " + str(angle))
 
 
 @app.route("/turn_stepper")
