@@ -69,6 +69,8 @@ dealerDown.start(0)
 #create the internal record of which cards are in the wheel 
 wheel = np.zeros(13)
 currentPosition = 0
+#global error message is changed within any function, right before the function returns 'false' to indicate failure
+error_message = "success"
 
 # GLOBAL CONST VARIABLES ----------------------------------------------------------------------------------------------------------
 #System States are coded as ints
@@ -111,6 +113,13 @@ def setAngle(motor, angle):
   time.sleep(0.5)
   motor.ChangeDutyCycle(0)
 
+# for continuous servos (dealer box)
+def setSpeed(motor, speed):
+  # ALTER THIS CODE 
+  motor.ChangeDutyCycle(2+(speed/18))
+  time.sleep(0.5)
+  motor.ChangeDutyCycle(0)
+
 # placeholder dynamic update function
 def randomNumberGenerator():
   """
@@ -138,6 +147,7 @@ def stepperCounter():
     socketio.sleep(0.1)
 
 def updatePosition(direction):
+  global currentPosition
   #called as part of turnWheel() only. 
   # Moving the wheel left increases the number, 
   # Moving the wheel right decreases it
@@ -154,6 +164,8 @@ def updatePosition(direction):
   # if direction = CENTER, do nothing
 
 def getWheelStatus():
+  global wheel
+  global currentPosition
   # use photogate to update record of which slots are full 
   status = cardDetected(WHEEL_GATE)
   # automatically update the internal record with the new data
@@ -166,6 +178,8 @@ def cardDetected(gate):
   return status
 
 def findClosestEmpty():
+  global wheel
+  global currentPosition
   shortestDist = 100
   closestEmpty = -1
   # calculate the closest empty position in the wheel, return the direction to turn (right, left, or go straight up) 
@@ -175,7 +189,7 @@ def findClosestEmpty():
       if np.abs(i-currentPosition) < np.abs(shortestDist):
         shortestDist = i-currentPosition
         closestEmpty = i
-   # return null if the wheel is full
+   #If the wheel is full according to the internal record, return NULL 
     if closestEmpty == -1:
       return NULL
    # otherwise, return the direction to turn 
@@ -210,15 +224,23 @@ def turnWheel(direction):
   getWheelStatus()
 
 def dealCardUp():
-  # Alter this code to run the continuous servo for the right amount of time
-  setAngle(dealerUp, 100)
+  # Runs the dealer box continuous servos, stopping the bottom one after the right delay
+  setSpeed(dealerUp, 100)
+  setSpeed(dealerDown, 100)
+  time.sleep(100)
+  setSpeed(dealerUp, 100)
+  setSpeed(dealerDown, 0)
 
 def dealCardDown():
-  # Alter this code to run the continuous servo for the right amount of time
-  setAngle(dealerUp, -100)
+  # Runs the dealer box continuous servos, stopping the top one after the right delay
+  setSpeed(dealerUp, -100)
+  setSpeed(dealerDown, -100)
+  time.sleep(100)
+  setSpeed(dealerUp, 0)
+  setSpeed(dealerDown, -100)
 
 # MAIN SYSTEM PROCESSES ----------------------------------------------------------------------------------------------------
-# Imported from the behavioral structure detailed in the Behavioral FLowchart. 
+# Imported from the behavioral structure detailed in the Behavioral Flowchart. 
 
 def takeCardFromWheel():
   openClaw()
@@ -229,35 +251,45 @@ def takeCardFromWheel():
   moveGrabber(MIDDLE)
   # We can choose to do something with this information (i.e. attempt process again) or not. 
   getWheelStatus()
-  return "success"
+  return True
 
 def placeCardIntoWheel():
+  global error_message 
+  # if the current slot is full, the wheel will have to move to the closest empty slot. 
   if getWheelStatus() == FULL:
     direction = findClosestEmpty()
     if direction == NULL:
-      # Wheel is full (notify higher-level processes)
-      return "wheel full"
-    while getWheelStatus() == FULL:
+      # Wheel is full according to internal record, but turn wheel all the way around to double check
+      direction == RIGHT
+    #go around the wheel until an empty slot is found, return an error if there are no empty spots
+    counter = 0
+    while getWheelStatus() == FULL & counter <= 12:
       turnWheel(direction)
+    if counter >= 12:
+      error_message = "wheel full"
+      return False
+  #finish actions of placing card in wheel. 
   moveGrabber(TOP)
   openClaw()
   moveGrabber(MIDDLE)
   closeClaw()
   getWheelStatus()
-  return "success"
+  return True
 
 def drawCardFromDeck():
+  global error_message
   for i in range(3):
     dealCardUp()
     if cardDetected(DEALER_GATE) :
       break
-    # Dealer Box is Empty or Jammed
-    return "check dealer box"
+    # gets here if Dealer Box is Empty or Jammed
+    error_message = "check dealer box"
+    return False
   openClaw()
   moveGrabber(BOTTOM)
   closeClaw()
   moveGrabber(MIDDLE)
-  return "success"
+  return True
   
 def discardFaceUp():
   setAngle(flipper, FLIPPED_POSITION)
@@ -265,7 +297,7 @@ def discardFaceUp():
   time.sleep(100)
   setAngle(flipper, STRAIGHT_UP)
   closeClaw()
-  return "success"
+  return True
 
 def discardFaceDown():
   setAngle(flipper, DISCARD_POSITION)
@@ -273,10 +305,18 @@ def discardFaceDown():
   time.sleep(100)
   setAngle(flipper, STRAIGHT_UP)
   closeClaw()
-  return "success"
+  return True
 
 def dealerBoxButton(): 
-  dealCardDown()
+  global error_message
+  for i in range(3):
+    dealCardUp()
+    if cardDetected(DEALER_GATE) :
+      break
+    # gets here if Dealer Box is Empty or Jammed
+    error_message = "check dealer box"
+    return False
+  return True
 # atexit.register(turnOffMotors(servo1))
 
 
@@ -312,7 +352,7 @@ def web_interface():
 
 
 # different "pages" for each individual button on the webpage 
-# buttons: 
+# buttons(some will be grayed out depending on systemState): 
 #   Draw Card Into Wheel    (DCIW)
 #   Place Card Into Wheel   (PCIW)
 #   Draw Card From Deck     (DCFD)
@@ -322,66 +362,90 @@ def web_interface():
 #   Wheel Left              (WL)
 #   Wheel Right             (WR)
 
+# Upon completion, each ofthe following functions returns the global variable "error_message" back to the webpage for displaying. error_message is set to 'success' at the start of the function and may be changed during any of the called processes. If an error occurs, the process will change the value of error_message and immediately return false. The following functions evaluate what to do when a process returns false, and ends by sending the final error_message to the website code if it cannot be resolved. The webpage is thus resposnsible for displaying errors like "wheel is full" or "check if dealer box is empty or jammed" which the players will have to deal with themselves. 
+
+# possible values for error_status (returned to webpage after actions are taken) 
+#   "success" 
+#   "wheel full" 
+#   "check dealer box" 
+#   "cannot perform action" (returned when a button was clicked that should have been grayed out/inactive)
+
 # Draw Card Into Wheel 
 @app.route("/DCIW")
 def DCFW():
     print ("Received DCIW")
+    global systemState
+    global error_message 
+    error_message = "success"
+
     if systemState == CARD_HELD:
         if placeCardIntoWheel():
           systemState = STANDBY_FULL
-        else:
-          return("Error: Wheel Full")
     else:
-        if drawCardFromDeck() == "success":
-          if placeCardIntoWheel() == "success":
+        if drawCardFromDeck():
+          if placeCardIntoWheel():
             systemState = STANDBY_FULL
-          else:
-            return("Error: Wheel Full")
-        else:
-          return("Error: Dealer box is empty or jammed")
-    return ("Received DCIW")
+        else: 
+          return error_message
+    # if all processes proceeded normally, it will return "success"
+    return error_message
 
 # Place Card Into Wheel
 @app.route("/PCIW")
 def PCIW():
     print ("Received PCIW")
+    global systemState
+    global error_message 
+    error_message = "success"
+
     if systemState == CARD_HELD:
-      # Evaluate if operation was performed or if wheel was full 
+       # Evaluate if operation was performed or if wheel was full 
         if placeCardIntoWheel():
           systemState = STANDBY_FULL
-        else:
-          return("Error: Wheel Full")
     else:
-        return("Error- cannot perform action")
-    return ("Received DCFW")
+        error_message = "cannot perform action"
+    return error_message
 
 # Draw Card From Deck
 @app.route("/DCFD")
 def DCFD():
     print ("Received DCFD")
+    global systemState
+    global error_message 
+    error_message = "success"
+
     if systemState == CARD_HELD:
-        return("Error- cannot perform action")
+        error_message = "cannot perform action"
     else:
-      if not drawCardFromDeck():
-        return("Error: Dealer box is empty or jammed")
-    return ("Received DCFD")
+      if drawCardFromDeck():
+        systemState == CARD_HELD
+    return error_message
 
 # Take Card From Wheel 
 @app.route("/TCFW")
 def TCFW():
     print ("Received TCFW")
+    global systemState
+    global error_message 
+    error_message = "success"
+
     if systemState == STANDBY_FULL:
-        takeCardFromWheel()
+        if takeCardFromWheel():
+          systemState = CARD_HELD
     else:
-      return("Error- cannot perform action")
-    return ("Received TCFW")
+      error_message = "cannot perform action"
+    return error_message 
 
 # Discard Face Down
 @app.route("/DFD")
 def DFD():
     print ("Received DFD")
+    global systemState
+    global error_message 
+    error_message = "success"
+
     if systemState == STANDBY_EMPTY:
-      return("Error- cannot perform action")
+      error_message = "cannot perform action"
     elif systemState == STANDBY_FULL:
       takeCardFromWheel()
       discardFaceDown()
@@ -392,14 +456,18 @@ def DFD():
       systemState = STANDBY_FULL
     else:
       systemState = STANDBY_EMPTY
-    return ("Received DFD")
+    return error_message
 
 # Discard Face Up
 @app.route("/DFU")
 def DFU():
     print ("Received DFU")
+    global systemState
+    global error_message 
+    error_message = "success"
+
     if systemState == STANDBY_EMPTY:
-      return("Error- cannot perform action")
+      error_message = "cannot perform action"
     elif systemState == STANDBY_FULL:
       takeCardFromWheel()
       discardFaceUp()
@@ -410,32 +478,40 @@ def DFU():
       systemState = STANDBY_FULL
     else:
       systemState = STANDBY_EMPTY
-    return ("Received DFU")
+    return error_message
 
 # Wheel Left
 @app.route("/WL")
 def WL():
     print ("Received WL")
+    global systemState
+    global error_message 
+    error_message = "success"
+
     turnWheel(LEFT)
     # update the system state only if current state is not card_held
-    if systemState != CARD_HELD:
+    if not systemState == CARD_HELD:
       if getWheelStatus() == FULL:
         systemState = STANDBY_FULL
       else:
         systemState = STANDBY_EMPTY
-    return ("Received WL")
+    return error_message 
 
 # Wheel Right
 @app.route("/WR")
 def WR():
     print ("Received WR")
+    global systemState
+    global error_message 
+    error_message = "success"
+
     turnWheel(RIGHT)
-    if systemState != CARD_HELD:
+    if not systemState == CARD_HELD:
       if getWheelStatus() == FULL:
         systemState = STANDBY_FULL
       else:
         systemState = STANDBY_EMPTY
-    return ("Received WR")
+    return error_message
 
 # Other or outdated website functions *********************************************************************************
 
