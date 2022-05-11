@@ -155,7 +155,6 @@ def updatePosition(direction):
 
 def getWheelStatus():
   # use photogate to update record of which slots are full 
-  # return a bool of whether gate is blocked
   status = cardDetected(WHEEL_GATE)
   # automatically update the internal record with the new data
   wheel[currentPosition] = status
@@ -230,14 +229,14 @@ def takeCardFromWheel():
   moveGrabber(MIDDLE)
   # We can choose to do something with this information (i.e. attempt process again) or not. 
   getWheelStatus()
-  return True
+  return "success"
 
 def placeCardIntoWheel():
   if getWheelStatus() == FULL:
     direction = findClosestEmpty()
     if direction == NULL:
       # Wheel is full (notify higher-level processes)
-      return False
+      return "wheel full"
     while getWheelStatus() == FULL:
       turnWheel(direction)
   moveGrabber(TOP)
@@ -245,7 +244,7 @@ def placeCardIntoWheel():
   moveGrabber(MIDDLE)
   closeClaw()
   getWheelStatus()
-  return True
+  return "success"
 
 def drawCardFromDeck():
   for i in range(3):
@@ -253,12 +252,12 @@ def drawCardFromDeck():
     if cardDetected(DEALER_GATE) :
       break
     # Dealer Box is Empty or Jammed
-    return False
+    return "check dealer box"
   openClaw()
   moveGrabber(BOTTOM)
   closeClaw()
   moveGrabber(MIDDLE)
-  return True
+  return "success"
   
 def discardFaceUp():
   setAngle(flipper, FLIPPED_POSITION)
@@ -266,7 +265,7 @@ def discardFaceUp():
   time.sleep(100)
   setAngle(flipper, STRAIGHT_UP)
   closeClaw()
-  return True
+  return "success"
 
 def discardFaceDown():
   setAngle(flipper, DISCARD_POSITION)
@@ -274,7 +273,7 @@ def discardFaceDown():
   time.sleep(100)
   setAngle(flipper, STRAIGHT_UP)
   closeClaw()
-  return True
+  return "success"
 
 def dealerBoxButton(): 
   dealCardDown()
@@ -333,8 +332,8 @@ def DCFW():
         else:
           return("Error: Wheel Full")
     else:
-        if drawCardFromDeck():
-          if placeCardIntoWheel():
+        if drawCardFromDeck() == "success":
+          if placeCardIntoWheel() == "success":
             systemState = STANDBY_FULL
           else:
             return("Error: Wheel Full")
