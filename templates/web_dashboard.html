@@ -7,9 +7,23 @@
     </script>
 
     <h1>Client Side</h1>
-
     <p ><a href=debug ><button>DEBUG</button></a></p>
+    <hr>
 
+    <button onclick="sendData('http://' + ip_a + ':5000/DCFD?state=TRUE')">Draw Card</button>
+    <button onclick="sendData('http://' + ip_a + ':5000/TCFW')">Take Card From Wheel</button>
+
+    <!-- button sending script -->
+    <script>
+      function sendData(url){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {}
+        };
+        xhttp.open("GET", url, true);
+        xhttp.send();
+      }
+    </script>
 
   </body>
 </html>
