@@ -56,7 +56,10 @@ servo4 = 22 # dealer box bottom
 servo5 = 10 # tripod pan
 servo6 = 9 # tripod tilt
 
+extButt = 13
+
 PGate = 26
+PGate2 = 19
 
 # start servos at 50Hz (standard for servos)
 pi.set_PWM_frequency(servo1, 50)
@@ -74,9 +77,13 @@ pi.set_mode(servo4, pigpio.OUTPUT)
 pi.set_mode(servo5, pigpio.OUTPUT)
 pi.set_mode(servo6, pigpio.OUTPUT)
 
-
 # initialize photogate pins
 GPIO.setup(PGate, GPIO.IN)
+GPIO.setup(PGate2, GPIO.IN)
+
+# set up pin to look for button press from other player
+GPIO.setup(extButt, GPIO.IN)
+
 
 
 # GLOBAL CONST VARIABLES ----------------------------------------------------------------------------------------------------------
@@ -144,6 +151,24 @@ def moveGrabber(position):
   stepsLead = int(usb.readline().decode('utf-8').rstrip())
   print(stepsLead)
 
+def dealCardUp():
+  pi.set_servo_pulsewidth(servo3, DEALER_GO_UP)
+  pi.set_servo_pulsewidth(servo4, DEALER_GO_UP)
+  sleep(0.5)
+  pi.set_servo_pulsewidth(servo4, 0)
+  sleep(1.2)
+  pi.set_servo_pulsewidth(servo3, 0)
+  sleep(0.5)
+
+def dealCardDown():
+  pi.set_servo_pulsewidth(servo3, DEALER_GO_DOWN)
+  pi.set_servo_pulsewidth(servo4, DEALER_GO_DOWN)
+  sleep(0.5)
+  pi.set_servo_pulsewidth(servo4, 0)
+  sleep(1.2)
+  pi.set_servo_pulsewidth(servo3, 0)
+  sleep(0.5)
+
 
 # WEB SERVER CODE ----------------------------------------------------------------------------------------------------
 
@@ -163,6 +188,11 @@ thread_stop_event = Event()
 # different "pages" for each individual function
 
 ## CLIENT SIDE --------------------------------------
+
+# adds function to the button press
+# 200 ms debounce time
+# https://sourceforge.net/p/raspberry-gpio-python/wiki/Inputs/
+GPIO.add_event_detect(extButt, GPIO.RISING, callback=dealCardDown, bouncetime=200)
 
 # defines the home page 
 @app.route("/")
@@ -185,15 +215,17 @@ def DCFD():
   # butt = request.args.get("state")
   # if butt == "TRUE":
   for i in range(DEALER_RETRIES):
+    dealCardUp()
     if not GPIO.input(PGate):
+      error_message = "success"
       break
-    pi.set_servo_pulsewidth(servo3, DEALER_GO_UP)
-    pi.set_servo_pulsewidth(servo4, DEALER_GO_UP)
-    sleep(0.5)
-    pi.set_servo_pulsewidth(servo4, 0)
-    sleep(1.2)
-    pi.set_servo_pulsewidth(servo3, 0)
-    sleep(0.5)
+    # gets here if Dealer Box is Empty or Jammed
+    error_message = "check dealer box"
+    return False
+  openClaw()
+  moveGrabber(BOTTOM)
+  closeClaw()
+  moveGrabber(MIDDLE)
   return True
 
 
