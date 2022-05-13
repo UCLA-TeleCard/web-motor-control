@@ -99,21 +99,23 @@ WHEEL_GATE = 1
 LEFT = 0
 RIGHT = 1
 # Experimentally determine the ideal servo posiitons (in us)
-CLAW_OPEN = 2200
-CLAW_CLOSED = 2400
+CLAW_OPEN = 2400
+CLAW_CLOSED = 2200
+GRABBER_VERT = 2200
+
 # direction and speed of dealer box servos (in us)
 DEALER_GO_UP = 1300
 DEALER_GO_DOWN = 1700
-DEALER_RETRIES = 4
+DEALER_RETRIES = 3
 # Experimentally determine the ideal stepper w lead screw posiitons
-TOP = 2700
+TOP = 2650
 MIDDLE = 1350
 BOTTOM = 0
 # Experimentally determine the number of steps 
 # that the wheel motor should turn to swap between cards
 CARD_STEP = 31
 
-
+isZeroed = False
 
 # FUNCTIONS ----------------------------------------------------------------------------------------------------------
 
@@ -135,21 +137,34 @@ def stepperCounter():
       stepsLeadOld = stepsLead
     socketio.sleep(0.1)
 
-# control the card grabber
+# control the card claw
 def openClaw():
+  print("open claw")
   setPulseWidth(servo2, CLAW_OPEN)
 def closeClaw():
+  print("close claw")
   setPulseWidth(servo2, CLAW_CLOSED)
+# and the card grabber
+def grabberVertical():
+  print("grabber vertical")
+  setPulseWidth(servo1, GRABBER_VERT)
 
 def moveGrabber(position):
   # input a variable representing the vertical position of the card grabber
   # move stepper the right number of steps 
   global stepsLead
+  global isZeroed
+  if not isZeroed:
+    error_message = "error: not zeroed"
+    print (error_message)
+    return error_message
+  stepsLeadOld = stepsLead
   command = "X" + str(position)
   usb.write(command.encode(encoding="utf-8"))
   sleep(0.1)
   stepsLead = int(usb.readline().decode('utf-8').rstrip())
   print(stepsLead)
+  return abs(stepsLead-stepsLeadOld)
 
 def dealCardUp():
   pi.set_servo_pulsewidth(servo3, DEALER_GO_UP)
@@ -164,9 +179,9 @@ def dealCardDown():
   pi.set_servo_pulsewidth(servo3, DEALER_GO_DOWN)
   pi.set_servo_pulsewidth(servo4, DEALER_GO_DOWN)
   sleep(0.5)
-  pi.set_servo_pulsewidth(servo4, 0)
-  sleep(1.2)
   pi.set_servo_pulsewidth(servo3, 0)
+  sleep(1.2)
+  pi.set_servo_pulsewidth(servo4, 0)
   sleep(0.5)
 
 
@@ -221,20 +236,39 @@ def DCFD():
       break
     # gets here if Dealer Box is Empty or Jammed
     error_message = "check dealer box"
-    return False
+    sleep(0.1)
+    # return error_message
+  grabberVertical()
   openClaw()
   moveGrabber(BOTTOM)
   closeClaw()
   moveGrabber(MIDDLE)
-  return True
+  print(error_message)
+  return error_message
+
+
+@app.route("/PCFD")
+def PCFD():
+  for i in range(DEALER_RETRIES):
+    dealCardDown()
+    if not GPIO.input(PGate):
+      error_message = "success"
+      break
+    # gets here if Dealer Box is Empty or Jammed
+    error_message = "check dealer box"
+    sleep(0.1)
+  print(error_message)
+  return error_message
 
 
 # Take Card From Wheel 
 @app.route("/TCFW")
 def TCFW():
   print ("Received TCFW")
+  grabberVertical()
   openClaw()
-  moveGrabber(TOP)
+  stepsDiff = moveGrabber(TOP)
+  sleep(1 + int(stepsDiff)*8/TOP)
   closeClaw()
   moveGrabber(MIDDLE)
   return True
@@ -292,10 +326,13 @@ def set_angle6():
 @app.route("/turn_stepper")
 def turn_stepper():
   global stepsLead
+  global isZeroed
   butt = request.args.get("state")
   usb.write(str(butt).encode(encoding="utf-8"))
   sleep(0.1)
   stepsLead = int(usb.readline().decode('utf-8').rstrip())
+  if stepsLead == 0:
+    isZeroed = True
   print (stepsLead)
   return ("Received " + str(butt))
 
