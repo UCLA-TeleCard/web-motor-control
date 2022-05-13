@@ -62,6 +62,7 @@ int leadMax = 2700;
 int leadMin = 0;
 
 bool isZeroed = false;
+unsigned long timeout = 10000;
 
 void setup() {
   Serial.begin(115200);
@@ -91,8 +92,8 @@ void setup() {
   leadDriver.settings.controlMode = PRODRIVER_MODE_SERIAL;
   leadDriver.settings.mode1Pin = leadDriverLatchPin; // latch pin
   leadDriver.begin(); // calling this first ensure latch pin 2 will be low during other future .begin()s
-  leadDriver.setCurrentLimit(256); // 25% current limit
-  leadDriver.setTorque(PRODRIVER_TRQ_25); // 25% torque limit
+  leadDriver.setCurrentLimit(512); // 25% current limit
+//  leadDriver.setTorque(PRODRIVER_TRQ_25); // 25% torque limit/
 
 
   // myProDriver1
@@ -129,7 +130,7 @@ void loop() {
       }
       // if negative, stepper moves down
       else {
-        leadDriver.stepSerial(stepsDiff, DOWN);
+        leadDriver.stepSerial(abs(stepsDiff), DOWN);
       }
       stepsLead = steps;
     }
@@ -164,14 +165,13 @@ void loop() {
         leadDriver.stepSerial(200, UP);
         delay(50);
       }
-      // 5% current limit so nothing breaks if limit switch fails
-      leadDriver.setCurrentLimit(51);
+      unsigned long timeStart = millis();
       // keep checking for limit switch while moving down
-      while(digitalRead(leadLimit) != HIGH){
+      while(digitalRead(leadLimit) != HIGH && millis()-timeStart <= timeout){
         leadDriver.stepSerial(1, DOWN);
       }
       // return to normal current
-      leadDriver.setCurrentLimit(256);
+//      leadDriver.setCurrentLimit(512);/
       isZeroed = true;
     }    
   }
