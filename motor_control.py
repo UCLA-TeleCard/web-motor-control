@@ -100,7 +100,7 @@ LEFT = 0
 RIGHT = 1
 # Experimentally determine the ideal servo posiitons (in us)
 CLAW_OPEN = 2400
-CLAW_CLOSED = 2200
+CLAW_CLOSED = 2150
 GRABBER_VERT = 2200
 
 # direction and speed of dealer box servos (in us)
@@ -240,7 +240,8 @@ def DCFD():
     # return error_message
   grabberVertical()
   openClaw()
-  moveGrabber(BOTTOM)
+  stepsDiff = moveGrabber(BOTTOM)
+  sleep(1 + int(stepsDiff)*8/TOP)
   closeClaw()
   moveGrabber(MIDDLE)
   print(error_message)
