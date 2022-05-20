@@ -332,7 +332,7 @@ def turn_stepper():
   usb.write(str(butt).encode(encoding="utf-8"))
   sleep(0.1)
   stepsLead = int(usb.readline().decode('utf-8').rstrip())
-  if stepsLead == 0:
+  if butt == "Z0" and stepsLead == 0:
     isZeroed = True
   print (stepsLead)
   return ("Received " + str(butt))
