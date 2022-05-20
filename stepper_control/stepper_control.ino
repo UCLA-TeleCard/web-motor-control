@@ -170,8 +170,18 @@ void loop() {
       while(digitalRead(leadLimit) != HIGH && millis()-timeStart <= timeout){
         leadDriver.stepSerial(1, DOWN);
       }
-      // return to normal current
-//      leadDriver.setCurrentLimit(512);/
+
+      // repeat the process for wheel stepper
+      if(digitalRead(wheelLimit) == HIGH){
+        wheelDriver.stepSerial(50, RIGHT);
+        delay(50);
+      }
+      unsigned long timeStart = millis();
+      // keep checking for limit switch while moving left
+      while(digitalRead(wheelLimit) != HIGH && millis()-timeStart <= timeout){
+        wheelDriver.stepSerial(1, LEFT);
+      }
+
       isZeroed = true;
     }    
   }
