@@ -13,8 +13,10 @@
     <button onclick="sendData('http://' + ip_a + ':5000/DCFD')">Draw Card</button>
     <button onclick="sendData('http://' + ip_a + ':5000/PCFD')">Play Card</button>
     <button onclick="sendData('http://' + ip_a + ':5000/TCFW')">Take Card From Wheel</button>
+    <button onclick="sendData('http://' + ip_a + ':5000/PCIW')">Place Card Into Wheel</button>
     <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=L31')">Wheel Left</button> 
-    <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=R31')">Wheel Right</button>    
+    <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=R31')">Wheel Right</button>  
+    <button onclick="sendData('http://' + ip_a + ':5000/GTCE')">Closest Empty</button>    
 
     <!-- button sending script -->
     <script>

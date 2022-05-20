@@ -16,6 +16,7 @@ import serial
 import pigpio
 import RPi.GPIO as GPIO
 from time import sleep
+import numpy as np
 
 
 # Connect to USB serial port
@@ -116,6 +117,9 @@ BOTTOM = 0
 CARD_STEP = 31
 
 isZeroed = False
+isCardHeld = False
+currentCard = 0
+cardArray = np.zeros(13)
 
 # FUNCTIONS ----------------------------------------------------------------------------------------------------------
 
@@ -184,6 +188,31 @@ def dealCardDown():
   pi.set_servo_pulsewidth(servo4, 0)
   sleep(0.5)
 
+def findClosestEmpty():
+  global currentCard
+  global cardArray
+  # index of empty slots
+  index = np.where(cardArray == 0)
+  print(index)
+  # find empty that is closest
+  indexDiff = index - currentCard
+  # returns index difference to get to closest empty slot
+  closestEmpty = indexDiff.index(min(abs(indexDiff)))
+  return closestEmpty
+
+def wheelGoTo(indexDiff):
+  global isZeroed
+  if not isZeroed:
+    status = "error: not zeroed"
+  else:
+    if indexDiff > 0:
+      command = "L" + str(abs(indexDiff) * CARD_STEP)
+    elif indexDiff < 0:
+      command = "R" + str(abs(indexDiff) * CARD_STEP)
+    usb.write(command.encode(encoding="utf-8"))
+    sleep(0.1)
+    status = "success"
+  return True
 
 # WEB SERVER CODE ----------------------------------------------------------------------------------------------------
 
@@ -227,6 +256,7 @@ def web_interface():
 
 @app.route("/DCFD")
 def DCFD():
+  global isCardHeld
   # butt = request.args.get("state")
   # if butt == "TRUE":
   for i in range(DEALER_RETRIES):
@@ -244,9 +274,31 @@ def DCFD():
   sleep(1 + int(stepsDiff)*8/TOP)
   closeClaw()
   moveGrabber(MIDDLE)
+  isCardHeld = True
   print(error_message)
   return error_message
 
+@app.route("/PCIW")
+def PCIW():
+  global currentCard
+  global cardArray
+  global isCardHeld
+  print("Recieved PCIW")
+  if not isCardHeld:
+    status = "no card in grabber"
+  else:
+    grabberVertical()
+    stepsDiff = moveGrabber(TOP)
+    sleep(1 + int(stepsDiff)*8/TOP)
+    openClaw()
+    stepsDiff = moveGrabber(MIDDLE)
+    sleep(1 + int(stepsDiff)*8/TOP)
+    isCardHeld = False
+
+    cardArray[currentCard] = 1
+    print(cardArray)
+    status = "success"
+  return status
 
 @app.route("/PCFD")
 def PCFD():
@@ -265,14 +317,28 @@ def PCFD():
 # Take Card From Wheel 
 @app.route("/TCFW")
 def TCFW():
+  global isCardHeld
   print ("Received TCFW")
-  grabberVertical()
-  openClaw()
-  stepsDiff = moveGrabber(TOP)
-  sleep(1 + int(stepsDiff)*8/TOP)
-  closeClaw()
-  moveGrabber(MIDDLE)
-  return True
+  if isCardHeld:
+    status = "error: grabber full"
+  else:
+    grabberVertical()
+    openClaw()
+    stepsDiff = moveGrabber(TOP)
+    sleep(1 + int(stepsDiff)*8/TOP)
+    closeClaw()
+    moveGrabber(MIDDLE)
+    isCardHeld = True
+    status = "success"
+  return status
+
+# go to closest empty
+@app.route("/GTCE")
+def GTCE():
+  indexDiff = findClosestEmpty()
+  wheelGoTo(indexDiff)
+  status = "success"
+  return status
 
 
 ## DEBUG PAGE ----------------------------------------
@@ -328,6 +394,7 @@ def set_angle6():
 def turn_stepper():
   global stepsLead
   global isZeroed
+  setPulseWidth(servo1, 2400)
   butt = request.args.get("state")
   usb.write(str(butt).encode(encoding="utf-8"))
   sleep(0.1)
