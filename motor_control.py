@@ -192,12 +192,16 @@ def findClosestEmpty():
   global currentCard
   global cardArray
   # index of empty slots
-  index = np.where(cardArray == 0)
+  index = np.argwhere(cardArray == 0)
+  print("index")
   print(index)
   # find empty that is closest
-  indexDiff = index - currentCard
+  indexDiff = np.subtract(index,currentCard)
+  print("index diff")
+  print(indexDiff)
   # returns index difference to get to closest empty slot
-  closestEmpty = indexDiff.index(min(abs(indexDiff)))
+  closestEmpty = int(indexDiff[np.argwhere(abs(indexDiff) == min(abs(indexDiff)))[0][0]])
+  print("closest empty = " + str(closestEmpty))
   return closestEmpty
 
 def wheelGoTo(indexDiff):
@@ -205,7 +209,7 @@ def wheelGoTo(indexDiff):
   if not isZeroed:
     status = "error: not zeroed"
   else:
-    if indexDiff > 0:
+    if indexDiff >= 0:
       command = "L" + str(abs(indexDiff) * CARD_STEP)
     elif indexDiff < 0:
       command = "R" + str(abs(indexDiff) * CARD_STEP)
@@ -298,6 +302,7 @@ def PCIW():
     cardArray[currentCard] = 1
     print(cardArray)
     status = "success"
+  print(status)
   return status
 
 @app.route("/PCFD")
@@ -330,6 +335,7 @@ def TCFW():
     moveGrabber(MIDDLE)
     isCardHeld = True
     status = "success"
+  print(status)
   return status
 
 # go to closest empty
@@ -338,6 +344,21 @@ def GTCE():
   indexDiff = findClosestEmpty()
   wheelGoTo(indexDiff)
   status = "success"
+  print(status)
+  return status
+
+@app.route("/turn_wheel")
+def turn_wheel():
+  global currentCard
+  indexDiff = int(request.args.get("indexDiff"))
+  wheelGoTo(indexDiff)
+  currentCard += indexDiff
+  if currentCard < 0:
+    currentCard = 12
+  elif currentCard > 12:
+    currentCard = 0
+  status = "sucesss"
+  print("current card = " + str(currentCard))
   return status
 
 
