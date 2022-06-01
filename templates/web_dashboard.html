@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <link rel="stylesheet" href="website-styling.css">
+</head>
+
   <body>
     <!-- change IP address here (to the Pi) -->
     <script type="text/javascript">
       var ip_a = "169.254.217.110"
     </script>
 
-    <h1>Client Side</h1>
-    <p ><a href=debug ><button>DEBUG</button></a></p>
+    <h1>TeleCard: Remote Card-Playing Robot</h1>
+      <h2> Web Interface </h2>
+    <p><a href=debug ><button class="menu">DEBUG</button></a></p>
     <hr>
-
-    <button onclick="sendData('http://' + ip_a + ':5000/DCFD')">Draw Card</button>
-    <button onclick="sendData('http://' + ip_a + ':5000/PCFD')">Play Card</button>
-    <button onclick="sendData('http://' + ip_a + ':5000/TCFW')">Take Card From Wheel</button>
-    <button onclick="sendData('http://' + ip_a + ':5000/PCIW')">Place Card Into Wheel</button>
-    <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?indexDiff=1')">Wheel Left</button> 
-    <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?indexDiff=-1')">Wheel Right</button>  
-    <button onclick="sendData('http://' + ip_a + ':5000/GTCE')">Closest Empty</button>    
-    <button onclick="sendData('http://' + ip_a + ':5000/DFU')">Discard Face Up</button>    
-    <button onclick="sendData('http://' + ip_a + ':5000/DFD')">Discard Face Down</button>    
-
+    <div class="button_group">
+        <button onclick="sendData('http://' + ip_a + ':5000/DCFD')">Draw Card</button>
+        <button onclick="sendData('http://' + ip_a + ':5000/PCFD')">Play Card</button>
+        <button onclick="sendData('http://' + ip_a + ':5000/TCFW')">Take Card From Wheel</button>
+        <button onclick="sendData('http://' + ip_a + ':5000/PCIW')">Place Card Into Wheel</button>
+        <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?indexDiff=1')">Wheel Left</button>
+        <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?indexDiff=-1')">Wheel Right</button>
+        <button onclick="sendData('http://' + ip_a + ':5000/GTCE')">Closest Empty</button>
+        <button onclick="sendData('http://' + ip_a + ':5000/DFU')">Discard Face Up</button>
+        <button onclick="sendData('http://' + ip_a + ':5000/DFD')">Discard Face Down</button>
+    </div>
 
     <!-- button sending script -->
     <script>
