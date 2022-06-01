@@ -103,6 +103,7 @@ RIGHT = 1
 CLAW_OPEN = 2400
 CLAW_CLOSED = 2175
 GRABBER_VERT = 2200
+GRABBER_FLIP = 150
 
 # direction and speed of dealer box servos (in us)
 DEALER_GO_UP = 1300
@@ -219,6 +220,15 @@ def wheelGoTo(indexDiff):
     status = "success"
   return True
 
+def flipCard():
+  global isZeroed
+  if not isZeroed:
+    status = "error: not zeroed"
+  else:
+    stepsDiff = moveGrabber(MIDDLE)
+    sleep(1 + int(stepsDiff)*8/TOP)
+    setPulseWidth(servo1, GRABBER_FLIP)
+
 # WEB SERVER CODE ----------------------------------------------------------------------------------------------------
 
 # initialize the web server
@@ -253,12 +263,15 @@ def web_interface():
 #   Draw Card Into Wheel    (DCIW)
 #   Place Card Into Wheel   (PCIW)
 #   Draw Card From Deck     (DCFD)
+#   Play Card from Deck     (PCFD)
 #   Take Card From Wheel    (TCFW)
 #   Discard Face Up         (DFU)
 #   Discard Face Down       (DFD)
 #   Wheel Left              (WL)
 #   Wheel Right             (WR)
 
+
+# Draw Card into Wheel
 @app.route("/DCFD")
 def DCFD():
   global isCardHeld
@@ -288,6 +301,8 @@ def DCFD():
   print(error_message)
   return error_message
 
+
+# Place Card into Wheel
 @app.route("/PCIW")
 def PCIW():
   global currentCard
@@ -312,6 +327,8 @@ def PCIW():
   print(status)
   return status
 
+
+# PLay Card from Deck
 @app.route("/PCFD")
 def PCFD():
   dealCardDown()
@@ -359,6 +376,41 @@ def GTCE():
   print(status)
   return status
 
+
+# discard face up
+# discard face down
+@app.route("/DFU")
+def DFU():
+  global isCardHeld
+  if not isCardHeld:
+    status = "error: no card to drop"
+  else:
+    flipCard()
+    stepsDiff = moveGrabber(BOTTOM)
+    sleep(1 + int(stepsDiff)*8/TOP)
+    sleep(0.2)
+    openClaw()
+    status = "success"
+  print(status)
+  return status
+
+# discard face down
+@app.route("/DFD")
+def DFD():
+  global isCardHeld
+  if not isCardHeld:
+    status = "error: no card to drop"
+  else:
+    stepsDiff = moveGrabber(BOTTOM)
+    sleep(1 + int(stepsDiff)*8/TOP)
+    setPulseWidth(servo1, 2400)
+    sleep(0.2)
+    openClaw()
+    status = "success"
+  print(status)
+  return status
+
+# Turn wheel left/right
 @app.route("/turn_wheel")
 def turn_wheel():
   global currentCard
