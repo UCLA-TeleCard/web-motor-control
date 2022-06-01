@@ -14,16 +14,18 @@
       <h2> Web Interface </h2>
     <p><a href=debug ><button class="menu">DEBUG</button></a></p>
     <hr>
-    <div class="button_group">
-        <button onclick="sendData('http://' + ip_a + ':5000/DCFD')">Draw Card</button>
-        <button onclick="sendData('http://' + ip_a + ':5000/PCFD')">Play Card</button>
-        <button onclick="sendData('http://' + ip_a + ':5000/TCFW')">Take Card From Wheel</button>
-        <button onclick="sendData('http://' + ip_a + ':5000/PCIW')">Place Card Into Wheel</button>
-        <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?indexDiff=1')">Wheel Left</button>
-        <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?indexDiff=-1')">Wheel Right</button>
-        <button onclick="sendData('http://' + ip_a + ':5000/GTCE')">Closest Empty</button>
-        <button onclick="sendData('http://' + ip_a + ':5000/DFU')">Discard Face Up</button>
-        <button onclick="sendData('http://' + ip_a + ':5000/DFD')">Discard Face Down</button>
+    <div class = "button_group">
+    <button onclick="sendData('http://' + ip_a + ':5000/DCFD')">Draw Card</button>
+    <button onclick="sendData('http://' + ip_a + ':5000/DCIW')">Draw Card into Wheel</button>
+    <button onclick="sendData('http://' + ip_a + ':5000/PCFD')">Play Card</button>
+    <button onclick="sendData('http://' + ip_a + ':5000/TCFW')">Take Card From Wheel</button>
+    <button onclick="sendData('http://' + ip_a + ':5000/PCIW')">Place Card Into Wheel</button>
+    <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?indexDiff=1')">Wheel Left</button> 
+    <button onclick="sendData('http://' + ip_a + ':5000/turn_wheel?indexDiff=-1')">Wheel Right</button>  
+    <button onclick="sendData('http://' + ip_a + ':5000/GTCE')">Closest Empty</button>    
+    <button onclick="sendData('http://' + ip_a + ':5000/DFU')">Discard Face Up</button>    
+    <button onclick="sendData('http://' + ip_a + ':5000/DFD')">Discard Face Down</button>   
+    <button onclick="sendData('http://' + ip_a + ':5000/CIWA')">Try card into wheel (again)</button>    
     </div>
 
     <!-- button sending script -->
@@ -38,5 +40,50 @@
       }
     </script>
 
+      <!-- servo 5 -->
+      <div id="slidecontainer5">
+        <p> Tilt</p>
+        <input type="range" min="500" max="1400" value="950" id="range5">
+        <!-- <p>Value: <span id="range5_value"></span>μs</p> -->
+      </div>
+
+      <script>
+        var slider5 = document.getElementById("range5");
+        var output5 = document.getElementById("range5");
+        output5.innerHTML = slider5.value;
+        
+        slider5.oninput = function() {
+          output5.innerHTML = slider5.value;
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {}
+        };
+          xhttp.open("GET", "http://" + ip_a + ":5000/set_servo5?speed=" + slider5.value, true);
+          xhttp.send()
+        }
+      </script>
+
+      <!-- servo 6 -->
+      <div id="slidecontainer6">
+        <p> Pan</p>
+        <input type="range" min="500" max="2400" value="1500" id="range6">
+        <!-- <p>Value: <span id="range6_value"></span>μs</p> -->
+      </div>
+
+      <script>
+        var slider6 = document.getElementById("range6");
+        var output6 = document.getElementById("range6");
+        output6.innerHTML = slider5.value;
+        
+        slider6.oninput = function() {
+          output6.innerHTML = slider6.value;
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {}
+        };
+          xhttp.open("GET", "http://" + ip_a + ":5000/set_servo6?speed=" + slider6.value, true);
+          xhttp.send()
+        }
+      </script>
   </body>
 </html>

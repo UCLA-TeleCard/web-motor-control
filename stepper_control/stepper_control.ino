@@ -181,13 +181,14 @@ void loop() {
 
       // repeat the process for wheel stepper
       if(digitalRead(wheelLimit) == HIGH){
-        wheelDriver.stepSerial(50, RIGHT);
+        wheelDriver.stepSerial(31, RIGHT);
         delay(50);
       }
         timeStart = millis();
       // keep checking for limit switch while moving left
       while(digitalRead(wheelLimit) != HIGH && millis()-timeStart <= timeout){
         wheelDriver.stepSerial(1, LEFT);
+        delay(wheelSlowDown);
       }
 
       isZeroed = true;
