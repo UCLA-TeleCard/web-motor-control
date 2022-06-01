@@ -101,7 +101,7 @@ LEFT = 0
 RIGHT = 1
 # Experimentally determine the ideal servo posiitons (in us)
 CLAW_OPEN = 2400
-CLAW_CLOSED = 2150
+CLAW_CLOSED = 2175
 GRABBER_VERT = 2200
 
 # direction and speed of dealer box servos (in us)
@@ -175,7 +175,7 @@ def dealCardUp():
   pi.set_servo_pulsewidth(servo4, DEALER_GO_UP)
   sleep(0.5)
   pi.set_servo_pulsewidth(servo4, 0)
-  sleep(1.2)
+  sleep(2)
   pi.set_servo_pulsewidth(servo3, 0)
   sleep(0.5)
 
@@ -184,11 +184,12 @@ def dealCardDown():
   pi.set_servo_pulsewidth(servo4, DEALER_GO_DOWN)
   sleep(0.5)
   pi.set_servo_pulsewidth(servo3, 0)
-  sleep(1.2)
+  sleep(2)
   pi.set_servo_pulsewidth(servo4, 0)
   sleep(0.5)
 
 def findClosestEmpty():
+  global isZeroed
   global currentCard
   global cardArray
   # index of empty slots
@@ -263,14 +264,19 @@ def DCFD():
   global isCardHeld
   # butt = request.args.get("state")
   # if butt == "TRUE":
-  for i in range(DEALER_RETRIES):
-    dealCardUp()
-    if not GPIO.input(PGate):
-      error_message = "success"
-      break
+  dealCardUp()
+  # for i in range(DEALER_RETRIES):
+    # dealCardUp()
+    # pi.set_servo_pulsewidth(servo3, DEALER_GO_UP)
+    # sleep(1.2)
+    # pi.set_servo_pulsewidth(servo3, 0)
+    # sleep(0.5)
+    # if not GPIO.input(PGate):
+    #   error_message = "success"
+    #   break
     # gets here if Dealer Box is Empty or Jammed
-    error_message = "check dealer box"
-    sleep(0.1)
+  error_message = "check dealer box"
+  sleep(0.1)
     # return error_message
   grabberVertical()
   openClaw()
@@ -293,6 +299,7 @@ def PCIW():
   else:
     grabberVertical()
     stepsDiff = moveGrabber(TOP)
+    print(stepsDiff)
     sleep(1 + int(stepsDiff)*8/TOP)
     openClaw()
     stepsDiff = moveGrabber(MIDDLE)
@@ -307,14 +314,15 @@ def PCIW():
 
 @app.route("/PCFD")
 def PCFD():
-  for i in range(DEALER_RETRIES):
-    dealCardDown()
-    if not GPIO.input(PGate):
-      error_message = "success"
-      break
+  dealCardDown()
+  # for i in range(DEALER_RETRIES):
+    # dealCardDown()
+    # if not GPIO.input(PGate):
+    #   error_message = "success"
+    #   break
     # gets here if Dealer Box is Empty or Jammed
-    error_message = "check dealer box"
-    sleep(0.1)
+  error_message = "check dealer box"
+  sleep(0.1)
   print(error_message)
   return error_message
 
@@ -330,6 +338,7 @@ def TCFW():
     grabberVertical()
     openClaw()
     stepsDiff = moveGrabber(TOP)
+    print(stepsDiff)
     sleep(1 + int(stepsDiff)*8/TOP)
     closeClaw()
     moveGrabber(MIDDLE)
@@ -341,8 +350,11 @@ def TCFW():
 # go to closest empty
 @app.route("/GTCE")
 def GTCE():
-  indexDiff = findClosestEmpty()
+  global currentCard
+  closest = findClosestEmpty()
+  indexDiff = currentCard - closest
   wheelGoTo(indexDiff)
+  currentCard += closest
   status = "success"
   print(status)
   return status

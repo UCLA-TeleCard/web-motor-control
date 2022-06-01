@@ -61,6 +61,8 @@ int RIGHT = 0;
 int leadMax = 2700;
 int leadMin = 0;
 
+int wheelSlowDown = 10;
+
 bool isZeroed = false;
 unsigned long timeout = 10000;
 
@@ -92,7 +94,7 @@ void setup() {
   leadDriver.settings.controlMode = PRODRIVER_MODE_SERIAL;
   leadDriver.settings.mode1Pin = leadDriverLatchPin; // latch pin
   leadDriver.begin(); // calling this first ensure latch pin 2 will be low during other future .begin()s
-  leadDriver.setCurrentLimit(512); // 25% current limit
+  leadDriver.setCurrentLimit(652); // 25% current limit
 //  leadDriver.setTorque(PRODRIVER_TRQ_25); // 25% torque limit/
 
 
@@ -148,12 +150,18 @@ void loop() {
     else if (motor == "L"){
 //      stepsLead -= steps;/
       Serial.println(stepsLead);
-      wheelDriver.stepSerial(steps, LEFT);
+      for(int i = 0; i <= steps; i++){
+        wheelDriver.stepSerial(1, LEFT);
+        delay(wheelSlowDown);
+      }
     }
     else if (motor == "R"){
 //      stepsLead -= steps;/
       Serial.println(stepsLead);
-      wheelDriver.stepSerial(steps, RIGHT);
+      for(int i = 0; i <= steps; i++){
+        wheelDriver.stepSerial(1, RIGHT);
+        delay(wheelSlowDown);
+      }
     }
     
     // ZEROING PROCESS
@@ -176,7 +184,7 @@ void loop() {
         wheelDriver.stepSerial(50, RIGHT);
         delay(50);
       }
-      unsigned long timeStart = millis();
+        timeStart = millis();
       // keep checking for limit switch while moving left
       while(digitalRead(wheelLimit) != HIGH && millis()-timeStart <= timeout){
         wheelDriver.stepSerial(1, LEFT);
