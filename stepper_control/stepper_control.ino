@@ -102,6 +102,7 @@ void setup() {
   // default latch pin is D5, so no need to change here
   wheelDriver.settings.controlMode = PRODRIVER_MODE_SERIAL;
   wheelDriver.begin();
+  wheelDriver.setCurrentLimit(650);
 
 
 }
@@ -180,17 +181,20 @@ void loop() {
       }
 
       // repeat the process for wheel stepper
+      wheelDriver.setCurrentLimit(1023);
       if(digitalRead(wheelLimit) == HIGH){
-        wheelDriver.stepSerial(31, RIGHT);
+        wheelDriver.stepSerial(100, RIGHT);
         delay(50);
       }
         timeStart = millis();
       // keep checking for limit switch while moving left
-      while(digitalRead(wheelLimit) != HIGH && millis()-timeStart <= timeout){
+      while(digitalRead(wheelLimit) != HIGH && millis()-timeStart <= timeout/2){
         wheelDriver.stepSerial(1, LEFT);
         delay(wheelSlowDown);
       }
-
+      delay(200);
+      wheelDriver.stepSerial(10, LEFT);
+      wheelDriver.setCurrentLimit(650);
       isZeroed = true;
     }    
   }

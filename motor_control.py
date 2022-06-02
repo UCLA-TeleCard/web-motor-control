@@ -54,8 +54,8 @@ servo1 = 4 # flipper
 servo2 = 17 # grabber
 servo3 = 27 # dealer box top
 servo4 = 22 # dealer box bottom
-servo5 = 10 # tripod pan
-servo6 = 9 # tripod tilt
+servo5 = 2 # tripod pan
+servo6 = 3 # tripod tilt
 
 extButt = 13
 
@@ -101,17 +101,18 @@ LEFT = 0
 RIGHT = 1
 # Experimentally determine the ideal servo posiitons (in us)
 CLAW_OPEN = 2400
-CLAW_CLOSED = 2175
+CLAW_CLOSED = 2160
 GRABBER_VERT = 2200
-GRABBER_FLIP = 150
+GRABBER_FLIP = 550
 
 # direction and speed of dealer box servos (in us)
-DEALER_GO_UP = 1300
-DEALER_GO_DOWN = 1700
+DEALER_GO_UP = 1350
+DEALER_GO_DOWN = 1650
 DEALER_RETRIES = 3
 # Experimentally determine the ideal stepper w lead screw posiitons
 TOP = 2650
-MIDDLE = 1350
+MIDDLE_TOP = 2300
+MIDDLE = 950
 BOTTOM = 0
 # Experimentally determine the number of steps 
 # that the wheel motor should turn to swap between cards
@@ -121,6 +122,7 @@ isZeroed = False
 isCardHeld = False
 currentCard = 0
 cardArray = np.zeros(13)
+wheelStepsArray = [30,30,30,30,30,30,30,31,29,29,31,31,30]
 
 # FUNCTIONS ----------------------------------------------------------------------------------------------------------
 
@@ -166,7 +168,7 @@ def moveGrabber(position):
   stepsLeadOld = stepsLead
   command = "X" + str(position)
   usb.write(command.encode(encoding="utf-8"))
-  sleep(0.1)
+  sleep(0.5)
   stepsLead = int(usb.readline().decode('utf-8').rstrip())
   print(stepsLead)
   return abs(stepsLead-stepsLeadOld)
@@ -174,9 +176,13 @@ def moveGrabber(position):
 def dealCardUp():
   pi.set_servo_pulsewidth(servo3, DEALER_GO_UP)
   pi.set_servo_pulsewidth(servo4, DEALER_GO_UP)
-  sleep(0.5)
+  sleep(0.19)
   pi.set_servo_pulsewidth(servo4, 0)
-  sleep(2)
+  sleep(0.1)
+  pi.set_servo_pulsewidth(servo4, DEALER_GO_DOWN)
+  sleep(0.1)
+  pi.set_servo_pulsewidth(servo4, 0)
+  sleep(1.3)
   pi.set_servo_pulsewidth(servo3, 0)
   sleep(0.5)
 
@@ -271,35 +277,30 @@ def web_interface():
 #   Wheel Right             (WR)
 
 
-# Draw Card into Wheel
+# Draw Card From Deck
 @app.route("/DCFD")
 def DCFD():
   global isCardHeld
-  # butt = request.args.get("state")
-  # if butt == "TRUE":
   dealCardUp()
-  # for i in range(DEALER_RETRIES):
-    # dealCardUp()
-    # pi.set_servo_pulsewidth(servo3, DEALER_GO_UP)
-    # sleep(1.2)
-    # pi.set_servo_pulsewidth(servo3, 0)
-    # sleep(0.5)
-    # if not GPIO.input(PGate):
-    #   error_message = "success"
-    #   break
-    # gets here if Dealer Box is Empty or Jammed
-  error_message = "check dealer box"
-  sleep(0.1)
-    # return error_message
-  grabberVertical()
-  openClaw()
-  stepsDiff = moveGrabber(BOTTOM)
-  sleep(1 + int(stepsDiff)*8/TOP)
-  closeClaw()
-  moveGrabber(MIDDLE)
-  isCardHeld = True
-  print(error_message)
-  return error_message
+  sleep(0.5)
+  if GPIO.input(PGate):
+    status = "error: Dealer Box is Empty or Jammed"
+  else:
+    grabberVertical()
+    openClaw()
+    stepsDiff = moveGrabber(BOTTOM)
+    sleep(3)
+    closeClaw()
+    stepsDiff = moveGrabber(MIDDLE)
+    sleep(2)
+    isCardHeld = True
+  if not GPIO.input(PGate):
+    # isCardHeld = False
+    status = "error: Dealer Box is Jammed"
+  else:
+    status = "success"
+  print(status)
+  return status
 
 
 # Place Card into Wheel
@@ -309,21 +310,20 @@ def PCIW():
   global cardArray
   global isCardHeld
   print("Recieved PCIW")
-  if not isCardHeld:
-    status = "no card in grabber"
-  else:
-    grabberVertical()
-    stepsDiff = moveGrabber(TOP)
-    print(stepsDiff)
-    sleep(1 + int(stepsDiff)*8/TOP)
-    openClaw()
-    stepsDiff = moveGrabber(MIDDLE)
-    sleep(1 + int(stepsDiff)*8/TOP)
-    isCardHeld = False
+  # if not isCardHeld:
+  #   status = "no card in grabber"
+  # else:
+  grabberVertical()
+  stepsDiff = moveGrabber(TOP)
+  sleep(6)
+  openClaw()
+  stepsDiff = moveGrabber(MIDDLE)
+  sleep(3)
+  isCardHeld = False
 
-    cardArray[currentCard] = 1
-    print(cardArray)
-    status = "success"
+  cardArray[currentCard] = 1
+  print(cardArray)
+  status = "success"
   print(status)
   return status
 
@@ -332,12 +332,6 @@ def PCIW():
 @app.route("/PCFD")
 def PCFD():
   dealCardDown()
-  # for i in range(DEALER_RETRIES):
-    # dealCardDown()
-    # if not GPIO.input(PGate):
-    #   error_message = "success"
-    #   break
-    # gets here if Dealer Box is Empty or Jammed
   error_message = "check dealer box"
   sleep(0.1)
   print(error_message)
@@ -369,9 +363,9 @@ def TCFW():
 def GTCE():
   global currentCard
   closest = findClosestEmpty()
-  indexDiff = currentCard - closest
-  wheelGoTo(indexDiff)
-  currentCard += closest
+  # indexDiff = currentCard - closest
+  # wheelGoTo(indexDiff)
+  # currentCard += closest
   status = "success"
   print(status)
   return status
@@ -386,10 +380,9 @@ def DFU():
     status = "error: no card to drop"
   else:
     flipCard()
-    stepsDiff = moveGrabber(BOTTOM)
-    sleep(1 + int(stepsDiff)*8/TOP)
     sleep(0.2)
     openClaw()
+    isCardHeld = False
     status = "success"
   print(status)
   return status
@@ -401,11 +394,12 @@ def DFD():
   if not isCardHeld:
     status = "error: no card to drop"
   else:
-    stepsDiff = moveGrabber(BOTTOM)
+    stepsDiff = moveGrabber(MIDDLE)
     sleep(1 + int(stepsDiff)*8/TOP)
     setPulseWidth(servo1, 2400)
     sleep(0.2)
     openClaw()
+    isCardHeld = False
     status = "success"
   print(status)
   return status
@@ -414,17 +408,70 @@ def DFD():
 @app.route("/turn_wheel")
 def turn_wheel():
   global currentCard
-  indexDiff = int(request.args.get("indexDiff"))
-  wheelGoTo(indexDiff)
-  currentCard += indexDiff
-  if currentCard < 0:
-    currentCard = 12
-  elif currentCard > 12:
-    currentCard = 0
+  global isZeroed
+  if not isZeroed:
+    status = "error: not zeroed"
+  else:
+    indexDiff = int(request.args.get("indexDiff"))
+    currentCard += indexDiff
+    if currentCard < 0:
+      currentCard = 12
+    elif currentCard > 12:
+      currentCard = 0
+
+    if indexDiff >= 0:
+      command = "L" + str(wheelStepsArray[currentCard])
+    elif indexDiff < 0:
+      command = "R" + str(wheelStepsArray[currentCard])
+    usb.write(command.encode(encoding="utf-8"))
+    sleep(0.1)
   status = "sucesss"
   print("current card = " + str(currentCard))
   return status
 
+# draw card into wheel
+@app.route("/DCIW")
+def DCIW():
+  DCFD()
+  sleep(1)
+  PCIW()
+
+
+# card into wheel again
+@app.route("/CIWA")
+def CIWA():
+  global isCardHeld
+  if isCardHeld:
+    status = "error: card still in grabber"
+  else:
+    grabberVertical()
+    openClaw()
+    sleep(0.2)
+    stepsDiff = moveGrabber(MIDDLE_TOP)
+    sleep(1 + int(stepsDiff)*8/TOP)
+    closeClaw()
+    sleep(0.2)
+    stepsDiff = moveGrabber(TOP)
+    sleep(1 + int(stepsDiff)*8/TOP)
+    openClaw()
+    sleep(0.2)
+    stepsDiff = moveGrabber(MIDDLE)
+    sleep(1 + int(stepsDiff)*8/TOP)
+    status = "success"
+  print(status)
+  return status
+
+
+# # PLay Card from Deck
+# @app.route("/PCFD")
+# def PCFD():
+#   DCFD()
+#   sleep(0.5)
+#   DFD()
+#   error_message = "success"
+#   sleep(0.1)
+#   print(error_message)
+#   return error_message
 
 ## DEBUG PAGE ----------------------------------------
 # debug webpage
@@ -463,14 +510,14 @@ def set_angle4():
 
 @app.route("/set_servo5")
 def set_angle5():
-  angle = int(request.args.get("angle"))
+  angle = int(request.args.get("speed"))
   setPulseWidth(servo5, angle)
   return ("Received " + str(angle))
 
 
 @app.route("/set_servo6")
 def set_angle6():
-  angle = int(request.args.get("angle"))
+  angle = int(request.args.get("speed"))
   setPulseWidth(servo6, angle)
   return ("Received " + str(angle))
 
