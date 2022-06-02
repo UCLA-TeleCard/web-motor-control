@@ -193,7 +193,7 @@ void loop() {
         delay(wheelSlowDown);
       }
       delay(200);
-      wheelDriver.stepSerial(10, LEFT);
+      wheelDriver.stepSerial(17, LEFT);
       wheelDriver.setCurrentLimit(650);
       isZeroed = true;
     }    
