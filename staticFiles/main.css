@@ -9,13 +9,14 @@ button {
     display: inline-block;
     font-size: 24px;
     border-radius: 10px;
-    transition-duration: 0.4s;
+    transition-duration: 0.3s;
     box-shadow: 0 10px #2F9444;
 }
     button:hover {
         background-color: #74CED4;
         box-shadow: 0 10px #338D93;
         color: #035C94;
+        transform: translateY(-3px);
         transition-duration: 0.2s;
     }
 
