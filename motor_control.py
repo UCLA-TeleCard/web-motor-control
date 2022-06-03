@@ -112,6 +112,7 @@ DEALER_RETRIES = 3
 # Experimentally determine the ideal stepper w lead screw posiitons
 TOP = 2650
 MIDDLE_TOP = 2300
+MIDDLE_DISCARD = 1050
 MIDDLE = 950
 BOTTOM = 0
 # Experimentally determine the number of steps 
@@ -122,7 +123,8 @@ isZeroed = False
 isCardHeld = False
 currentCard = 0
 cardArray = np.zeros(13)
-wheelStepsArray = [30,30,30,30,30,30,30,31,29,29,31,31,30]
+wheelStepsArrayLeft = [31,31,30,30,31,32,29,30,29,29,31,30,30]
+wheelStepsArrayRight = [31,31,30,29,31,32,29,30,29,29,31,30,30]
 
 # FUNCTIONS ----------------------------------------------------------------------------------------------------------
 
@@ -238,7 +240,7 @@ def flipCard():
 # WEB SERVER CODE ----------------------------------------------------------------------------------------------------
 
 # initialize the web server
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates', static_folder='staticFiles')
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = True
 
@@ -350,9 +352,10 @@ def TCFW():
     openClaw()
     stepsDiff = moveGrabber(TOP)
     print(stepsDiff)
-    sleep(1 + int(stepsDiff)*8/TOP)
+    sleep(9)
     closeClaw()
     moveGrabber(MIDDLE)
+    sleep(2)
     isCardHeld = True
     status = "success"
   print(status)
@@ -394,8 +397,8 @@ def DFD():
   if not isCardHeld:
     status = "error: no card to drop"
   else:
-    stepsDiff = moveGrabber(MIDDLE)
-    sleep(1 + int(stepsDiff)*8/TOP)
+    stepsDiff = moveGrabber(MIDDLE_DISCARD)
+    sleep(3)
     setPulseWidth(servo1, 2400)
     sleep(0.2)
     openClaw()
@@ -420,9 +423,9 @@ def turn_wheel():
       currentCard = 0
 
     if indexDiff >= 0:
-      command = "L" + str(wheelStepsArray[currentCard])
+      command = "L" + str(wheelStepsArrayLeft[currentCard])
     elif indexDiff < 0:
-      command = "R" + str(wheelStepsArray[currentCard])
+      command = "R" + str(wheelStepsArrayRight[currentCard])
     usb.write(command.encode(encoding="utf-8"))
     sleep(0.1)
   status = "sucesss"
