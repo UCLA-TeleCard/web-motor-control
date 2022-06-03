@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="website-styling.css">
+    <link rel="stylesheet" href="/staticFiles/main.css" />
 </head>
 
   <body>
@@ -11,7 +11,11 @@
     </script>
 
     <h1>TeleCard: Remote Card-Playing Robot</h1>
-    <p><a href=debug ><button class="menu">DEBUG</button></a></p>
+    <a href=debug ><button class="menu">DEBUG</button></a>
+    <!-- Zero the stepper -->
+    <button onclick="sendData('http://' + ip_a + ':5000/turn_stepper?state=Z0')">ZERO</button>
+
+
     <hr>
     <div class="columns">
         <div class="button_group">
