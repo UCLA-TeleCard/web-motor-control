@@ -2,6 +2,8 @@
 
 This code provides a web dashboard that allows for granular control of servos (both continuous and not) and steppers.
 
+![](https://github.com/UCLA-TeleCard/web-motor-control/blob/main/images/dashboard.png)
+
 ## Installation
 
 Clone the repo by running `git clone https://github.com/UCLA-TeleCard/web-motor-control.git`.
