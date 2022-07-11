@@ -94,7 +94,7 @@ void setup() {
   leadDriver.settings.controlMode = PRODRIVER_MODE_SERIAL;
   leadDriver.settings.mode1Pin = leadDriverLatchPin; // latch pin
   leadDriver.begin(); // calling this first ensure latch pin 2 will be low during other future .begin()s
-  leadDriver.setCurrentLimit(652); // 25% current limit
+  leadDriver.setCurrentLimit(950); // 25% current limit
 //  leadDriver.setTorque(PRODRIVER_TRQ_25); // 25% torque limit/
 
 
